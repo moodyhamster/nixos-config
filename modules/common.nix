@@ -43,18 +43,21 @@
   };
 
   programs.firefox.enable = true;
+  programs.steam.enable = true;
 
   nixpkgs.config.allowUnfree = true;
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
-  # Applications wanted on all machines.
+  # Applications wanted on every machine.
   environment.systemPackages = with pkgs; [
     git
     gh
     brave
     discord
     librewolf
+    lutris
     sticky
     proton-vpn
+    kdePackages.kate
   ];
 }
