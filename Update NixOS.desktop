@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Update NixOS Config
+Comment=Pull the latest NixOS configuration from GitHub and rebuild
+Exec=konsole -e bash -lc "$HOME/nixos-config/update-nixos-config.sh"
+Icon=system-software-update
+Terminal=false
+Categories=System;
+StartupNotify=true
