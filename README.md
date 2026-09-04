@@ -58,11 +58,12 @@ sudo nixos-rebuild switch -I "nixos-config=$HOME/nixos-config/hosts/nixos/config
 Install the KDE desktop updater:
 
 ```bash
-chmod +x ~/nixos-config/update-nixos-config.sh
 mkdir -p ~/Desktop
 cp ~/nixos-config/'Update NixOS.desktop' ~/Desktop/
 chmod +x ~/Desktop/'Update NixOS.desktop'
 ```
+
+The launcher runs `update-nixos-config.sh` through Bash, so the script itself does not need `chmod +x`. Keeping the repository copy non-executable avoids Git treating a local mode change as an uncommitted modification.
 
 ## Adding another machine
 
@@ -86,7 +87,7 @@ Afterward, `update-nixos-config.sh` automatically detects the hostname, pulls Gi
 ## Normal updates
 
 ```bash
-~/nixos-config/update-nixos-config.sh
+bash ~/nixos-config/update-nixos-config.sh
 ```
 
 For a change that should affect every computer, edit `modules/common.nix`. For all KDE desktops, edit `profiles/desktop-kde.nix`. For all GNOME laptops, edit `profiles/laptop-gnome.nix`. For gaming machines, edit `profiles/gaming.nix`. For one computer only, edit its file under `hosts/`.
