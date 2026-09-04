@@ -10,27 +10,24 @@ Clone the repository:
 git clone https://github.com/moodyhamster/nixos-config.git ~/nixos-config
 ```
 
-Copy the machine's generated hardware configuration into the repo directory without committing it:
+Copy that machine's generated hardware configuration into the repo directory. It is ignored by Git, so it stays local to that PC:
 
 ```bash
 cp /etc/nixos/hardware-configuration.nix ~/nixos-config/hardware-configuration.nix
 ```
 
-Then rebuild using the repository configuration:
+Rebuild directly from the GitHub-managed configuration:
 
 ```bash
-sudo nixos-rebuild switch -I nixos-config=~/nixos-config -I nixpkgs=/nix/var/nix/profiles/per-user/root/channels/nixos -I nixos=~/nixos-config/configuration.nix
+sudo nixos-rebuild switch -I nixos-config="$HOME/nixos-config/configuration.nix"
 ```
-
-For a simpler non-flake workflow, you can instead copy/symlink the managed file into `/etc/nixos` and rebuild normally.
 
 ## Updating later
 
 ```bash
 cd ~/nixos-config
 git pull
-sudo cp configuration.nix /etc/nixos/configuration.nix
-sudo nixos-rebuild switch
+sudo nixos-rebuild switch -I nixos-config="$HOME/nixos-config/configuration.nix"
 ```
 
 `hardware-configuration.nix` is intentionally ignored by Git because it can contain machine-specific disk UUIDs and filesystem settings.
