@@ -28,5 +28,5 @@
 
   # IMPORTANT: copy this value from the machine's existing configuration.nix.
   # Do not raise it just because NixOS was upgraded later.
-  system.stateVersion = "CHANGE-ME";
+  # system.stateVersion = "26.05";
 }
