@@ -48,7 +48,8 @@
   nixpkgs.config.allowUnfree = true;
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
-  # Applications wanted on every machine.
+  # Apps/tools deliberately shared across all of Jason's machines.
+  # KDE/GNOME desktop-specific apps belong in their desktop profiles instead.
   environment.systemPackages = with pkgs; [
     git
     gh
@@ -58,6 +59,5 @@
     lutris
     sticky
     proton-vpn
-    kdePackages.kate
   ];
 }
