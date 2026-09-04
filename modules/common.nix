@@ -1,7 +1,7 @@
 { pkgs, ... }:
 
 {
-  # Settings shared by every NixOS machine.
+  # Settings shared by every NixOS machine, regardless of desktop or hardware.
   networking.networkmanager.enable = true;
 
   time.timeZone = "Europe/London";
@@ -18,11 +18,6 @@
     LC_TELEPHONE = "en_US.UTF-8";
     LC_TIME = "en_US.UTF-8";
   };
-
-  # KDE Plasma 6 desktop with X11 support available.
-  services.xserver.enable = true;
-  services.displayManager.sddm.enable = true;
-  services.desktopManager.plasma6.enable = true;
 
   services.xserver.xkb = {
     layout = "us";
@@ -45,9 +40,6 @@
     isNormalUser = true;
     description = "jason";
     extraGroups = [ "networkmanager" "wheel" ];
-    packages = with pkgs; [
-      kdePackages.kate
-    ];
   };
 
   programs.firefox.enable = true;
@@ -55,19 +47,14 @@
   nixpkgs.config.allowUnfree = true;
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
+  # Applications wanted on all machines.
   environment.systemPackages = with pkgs; [
     git
     gh
     brave
     discord
     librewolf
-    lutris
     sticky
     proton-vpn
-    steam
   ];
-
-  # Keep this at the version first installed on these systems unless we
-  # deliberately migrate it later.
-  system.stateVersion = "26.05";
 }
