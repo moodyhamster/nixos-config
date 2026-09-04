@@ -1,32 +1,45 @@
 # Jason's NixOS configuration
 
-This private repository is organized for multiple NixOS machines.
+This private repository is organized for multiple NixOS machines with shared settings, desktop-role profiles, and one host file per computer.
 
 ```text
 nixos-config/
-├── configuration.nix              # compatibility entry for the original host
+├── configuration.nix
 ├── modules/
-│   └── common.nix                 # settings shared by every machine
+│   └── common.nix
+├── profiles/
+│   ├── desktop-kde.nix
+│   ├── laptop-gnome.nix
+│   └── gaming.nix
 ├── hosts/
 │   ├── nixos/
-│   │   └── configuration.nix      # current machine-specific settings
+│   │   └── configuration.nix
 │   └── _template/
-│       └── configuration.nix      # starting point for another machine
-├── update-nixos-config.sh         # pulls GitHub and rebuilds the current host
-└── Update NixOS.desktop           # KDE desktop launcher
+│       └── configuration.nix
+├── MACHINES.md
+├── update-nixos-config.sh
+└── Update NixOS.desktop
 ```
 
-## What is shared
+## How it is organized
 
-`modules/common.nix` contains the desktop, user, locale, networking, audio, applications, Git/GitHub CLI and other settings that should be the same on all machines.
+`modules/common.nix` contains settings and applications wanted on every machine: networking, locale, PipeWire, printing, the `jason` user, Firefox, Git/GitHub CLI, Brave, Discord, LibreWolf, Proton VPN and other common settings.
 
-## What is machine-specific
+Desktop environments are separate profiles:
 
-Each machine has `hosts/<hostname>/configuration.nix`. This is where its hostname and bootloader settings belong.
+- `profiles/desktop-kde.nix` enables KDE Plasma 6 and SDDM.
+- `profiles/laptop-gnome.nix` enables GNOME and GDM.
+- `profiles/gaming.nix` enables Steam and installs Lutris.
 
-The generated `/etc/nixos/hardware-configuration.nix` stays on each computer. It is not committed to GitHub, so disk UUIDs and filesystem details do not get copied between machines.
+Each computer gets `hosts/<hostname>/configuration.nix`. That file chooses the right profiles and contains machine-specific settings such as hostname, bootloader and `system.stateVersion`.
 
-## First machine: `nixos`
+The generated `/etc/nixos/hardware-configuration.nix` stays local to each computer. Do not copy it between machines because it can contain disk UUIDs, filesystem configuration and detected hardware settings.
+
+See `MACHINES.md` for the current desktop, ThinkPad C13 Yoga, and ASUS ROG Strix G16 plan.
+
+## Current KDE desktop
+
+The current host is `nixos` and imports the KDE and gaming profiles.
 
 Clone the private repository:
 
@@ -36,13 +49,13 @@ gh auth login
 gh repo clone moodyhamster/nixos-config ~/nixos-config
 ```
 
-Rebuild directly from its host configuration:
+Rebuild it with:
 
 ```bash
 sudo nixos-rebuild switch -I "nixos-config=$HOME/nixos-config/hosts/nixos/configuration.nix"
 ```
 
-Install the desktop updater:
+Install the KDE desktop updater:
 
 ```bash
 chmod +x ~/nixos-config/update-nixos-config.sh
@@ -51,37 +64,29 @@ cp ~/nixos-config/'Update NixOS.desktop' ~/Desktop/
 chmod +x ~/Desktop/'Update NixOS.desktop'
 ```
 
-## Adding another NixOS machine
+## Adding another machine
 
-Choose a unique hostname, for example `optiplex2`. Clone the repository, then create a host directory from the template:
+Copy the template into a directory whose name matches that machine's hostname:
 
 ```bash
 cd ~/nixos-config
-cp -r hosts/_template hosts/optiplex2
+cp -r hosts/_template hosts/MY-HOSTNAME
 ```
 
-Edit `hosts/optiplex2/configuration.nix`, set:
+Then edit `hosts/MY-HOSTNAME/configuration.nix` to choose either the KDE or GNOME profile, optionally add the gaming profile, configure the correct bootloader, and copy the machine's existing `system.stateVersion` value.
 
-```nix
-networking.hostName = "optiplex2";
-```
-
-and configure the correct bootloader for that computer. Do not copy another computer's hardware configuration over `/etc/nixos/hardware-configuration.nix`.
-
-For the first rebuild on the new machine, explicitly select that host:
+For the first rebuild on that machine:
 
 ```bash
-sudo nixos-rebuild switch -I "nixos-config=$HOME/nixos-config/hosts/optiplex2/configuration.nix"
+sudo nixos-rebuild switch -I "nixos-config=$HOME/nixos-config/hosts/MY-HOSTNAME/configuration.nix"
 ```
 
-After the rebuild, the machine has its new hostname and `update-nixos-config.sh` will automatically select `hosts/optiplex2/configuration.nix` on future updates.
+Afterward, `update-nixos-config.sh` automatically detects the hostname, pulls GitHub and rebuilds using the matching host configuration.
 
 ## Normal updates
-
-The KDE launcher or this command will pull the latest GitHub changes and rebuild the configuration matching the current hostname:
 
 ```bash
 ~/nixos-config/update-nixos-config.sh
 ```
 
-When changing shared settings, edit `modules/common.nix`. When changing only one computer, edit that computer's file under `hosts/`.
+For a change that should affect every computer, edit `modules/common.nix`. For all KDE desktops, edit `profiles/desktop-kde.nix`. For all GNOME laptops, edit `profiles/laptop-gnome.nix`. For gaming machines, edit `profiles/gaming.nix`. For one computer only, edit its file under `hosts/`.
