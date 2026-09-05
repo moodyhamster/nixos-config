@@ -13,12 +13,6 @@
   # shared Dell OptiPlex hardware profile above.
   networking.hostName = "dell-optiplex";
 
-  users.users.jason = {
-    isNormalUser = true;
-    description = "jason";
-    extraGroups = [ "networkmanager" "wheel" ];
-  };
-
   # This machine was first installed on NixOS 26.05.
   system.stateVersion = "26.05";
 }
