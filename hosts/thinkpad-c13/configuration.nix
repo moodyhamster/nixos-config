@@ -9,6 +9,12 @@
 
   networking.hostName = "thinkpad-c13";
 
+  users.users.jason = {
+    isNormalUser = true;
+    description = "jason";
+    extraGroups = [ "networkmanager" "wheel" ];
+  };
+
   # Lenovo ThinkPad C13 Yoga Chromebook Gen 1
   # AMD Ryzen 5 3500C with integrated Radeon Vega graphics.
   # The generated hardware configuration remains local in /etc/nixos.
