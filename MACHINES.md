@@ -24,12 +24,21 @@ This repository uses shared modules plus role profiles. Each real computer gets 
 
 ## ASUS ROG Strix G16 (2023)
 
+- Managed hostname: `rog-strix-g16`
+- Model: `ROG Strix G614JV_G614JV`
 - Desktop environment: GNOME
-- CPU: Intel Core i7, 13th generation
-- Dedicated GPU: NVIDIA GeForce RTX 4060 Laptop GPU
-- Intended profiles: `laptop-gnome.nix` + `gaming.nix`
-- This is a hybrid Intel/NVIDIA laptop. Do not copy a generic PRIME configuration from another machine: the Intel and NVIDIA PCI bus IDs must be read from this laptop first.
-- Host entry and NVIDIA PRIME/offload settings will be added after its actual hostname, boot mode, existing `system.stateVersion`, and GPU PCI addresses are confirmed.
+- CPU: Intel Core i7-13650HX
+- Integrated GPU: Intel Raptor Lake-S UHD Graphics, PCI `0000:00:02.0`
+- Dedicated GPU: NVIDIA GeForce RTX 4060 Laptop GPU (AD107M), PCI `0000:01:00.0`
+- Boot mode: UEFI
+- Bootloader: systemd-boot
+- Storage: 1 TB NVMe, 1 GB FAT32 EFI partition mounted at `/boot`, ext4 root filesystem
+- `system.stateVersion`: `26.05`
+- Role profiles: `laptop-gnome.nix` + `gaming.nix`
+- Host entry: `hosts/rog-strix-g16/configuration.nix`
+- NVIDIA's current driver stack is enabled with the open kernel module and PRIME render offload.
+- GNOME normally runs on the Intel iGPU; `nvidia-offload <command>` can launch an application on the RTX 4060.
+- OpenSSH is enabled for remote access from the local network.
 
 ## Information to collect from future machines
 
