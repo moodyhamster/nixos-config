@@ -12,12 +12,6 @@
   # shared Dell Inspiron 3501 hardware profile above.
   networking.hostName = "dell-inspiron-3501";
 
-  users.users.val = {
-    isNormalUser = true;
-    description = "val";
-    extraGroups = [ "networkmanager" "wheel" ];
-  };
-
   # Keep the value from this machine's original installation.
   system.stateVersion = "26.05";
 }
