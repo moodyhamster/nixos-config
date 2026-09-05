@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Update All NixOS Devices
+Comment=Pull GitHub configuration and rebuild this PC and the NixOS laptops
+Exec=konsole -e bash -lc "bash $HOME/nixos-config/update-all-devices.sh"
+Icon=system-software-update
+Terminal=false
+Categories=System;
+StartupNotify=true
