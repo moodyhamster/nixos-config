@@ -1,26 +1,11 @@
+# Compatibility/migration alias for the main desktop's old hostname.
+# Once the machine rebuilds, networking.hostName becomes "dell-optiplex" and
+# the normal updater will use hosts/dell-optiplex/configuration.nix thereafter.
+
 { ... }:
 
 {
   imports = [
-    /etc/nixos/hardware-configuration.nix
-    ../../modules/common.nix
-    ../../profiles/desktop-kde.nix
-    ../../profiles/gaming.nix
+    ../dell-optiplex/configuration.nix
   ];
-
-  networking.hostName = "nixos";
-
-  users.users.jason = {
-    isNormalUser = true;
-    description = "jason";
-    extraGroups = [ "networkmanager" "wheel" ];
-  };
-
-  # Host-specific bootloader settings for the current desktop.
-  boot.loader.grub.enable = true;
-  boot.loader.grub.device = "/dev/nvme0n1";
-  boot.loader.grub.useOSProber = true;
-
-  # This machine was first installed on NixOS 26.05.
-  system.stateVersion = "26.05";
 }
