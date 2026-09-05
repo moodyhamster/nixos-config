@@ -14,6 +14,10 @@ nixos-config/
 ├── hosts/
 │   ├── nixos/
 │   │   └── configuration.nix
+│   ├── thinkpad-c13/
+│   │   └── configuration.nix
+│   ├── rog-strix-g16/
+│   │   └── configuration.nix
 │   └── _template/
 │       └── configuration.nix
 ├── MACHINES.md
@@ -23,19 +27,19 @@ nixos-config/
 
 ## How it is organized
 
-`modules/common.nix` contains settings and applications wanted on every machine: networking, locale, PipeWire, printing, the `jason` user, Firefox, Git/GitHub CLI, Brave, Discord, LibreWolf, Proton VPN and other common settings.
+`modules/common.nix` contains settings and applications wanted on every machine: networking, locale, PipeWire, printing, the `jason` user, Firefox, Git/GitHub CLI, Brave, Discord, LibreWolf, Lutris, Steam, Sticky, Proton VPN and other common settings.
 
 Desktop environments are separate profiles:
 
 - `profiles/desktop-kde.nix` enables KDE Plasma 6 and SDDM.
 - `profiles/laptop-gnome.nix` enables GNOME and GDM.
-- `profiles/gaming.nix` enables Steam and installs Lutris.
+- `profiles/gaming.nix` is kept for gaming-machine-only tuning and services; the apps Jason deliberately wanted everywhere are in `modules/common.nix`.
 
-Each computer gets `hosts/<hostname>/configuration.nix`. That file chooses the right profiles and contains machine-specific settings such as hostname, bootloader and `system.stateVersion`.
+Each computer gets `hosts/<hostname>/configuration.nix`. That file chooses the right profiles and contains machine-specific settings such as hostname, bootloader, graphics configuration and `system.stateVersion`.
 
 The generated `/etc/nixos/hardware-configuration.nix` stays local to each computer. Do not copy it between machines because it can contain disk UUIDs, filesystem configuration and detected hardware settings.
 
-See `MACHINES.md` for the current desktop, ThinkPad C13 Yoga, and ASUS ROG Strix G16 plan.
+See `MACHINES.md` for the current desktop, ThinkPad C13 Yoga, and ASUS ROG Strix G16 details.
 
 ## Current KDE desktop
 
