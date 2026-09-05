@@ -10,6 +10,12 @@
 
   networking.hostName = "nixos";
 
+  users.users.jason = {
+    isNormalUser = true;
+    description = "jason";
+    extraGroups = [ "networkmanager" "wheel" ];
+  };
+
   # Host-specific bootloader settings for the current desktop.
   boot.loader.grub.enable = true;
   boot.loader.grub.device = "/dev/nvme0n1";
