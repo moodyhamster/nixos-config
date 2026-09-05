@@ -1,18 +1,9 @@
 { ... }:
 
 {
+  # Default desktop for this host. Use switch-desktop.sh to change the
+  # persistent local selection between kde and gnome.
   imports = [
-    /etc/nixos/hardware-configuration.nix
-    ../../modules/common.nix
-    ../../profiles/laptop-gnome.nix
-    ../../profiles/gaming.nix
-    ../../profiles/hardware/rog-strix-g16.nix
+    ./kde.nix
   ];
-
-  # Physical-machine identity stays here; model-wide settings live in the
-  # shared ROG Strix G16 hardware profile above.
-  networking.hostName = "rog-strix-g16";
-
-  # Keep the value from this machine's original installation.
-  system.stateVersion = "26.05";
 }
