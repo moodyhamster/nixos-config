@@ -1,5 +1,14 @@
 { pkgs, ... }:
 
+let
+  # Zen Browser is not currently packaged directly in nixpkgs 26.05.
+  # Pin the community Zen packaging repo and import it with this system's pkgs.
+  zenBrowserSrc = builtins.fetchGit {
+    url = "https://github.com/0xc000022070/zen-browser-flake.git";
+    rev = "fdb83f8fce835213fab7eab52c375926fe1a32dc";
+  };
+  zenBrowser = (import zenBrowserSrc { inherit pkgs; }).default;
+in
 {
   # Settings shared by every NixOS machine, regardless of desktop or hardware.
   networking.networkmanager.enable = true;
@@ -58,6 +67,7 @@
     discord
     librewolf
     libreoffice-fresh
+    zenBrowser
     lutris
     sticky
     proton-vpn
