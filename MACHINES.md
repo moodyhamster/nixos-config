@@ -2,6 +2,11 @@
 
 This repository uses shared modules, desktop-role profiles and reusable model-specific hardware profiles. Each physical computer still gets its own `hosts/<hostname>/configuration.nix`.
 
+Desktop environment convention:
+
+- **Laptops use GNOME** via `profiles/laptop-gnome.nix`.
+- **Desktops use KDE Plasma** via `profiles/desktop-kde.nix`.
+
 User accounts are host-specific so machines can keep their existing login names while still sharing the same applications and model settings. Identical machines use unique numbered hostnames such as `thinkpad-c13-2` and `thinkpad-c13-3`.
 
 The generated `/etc/nixos/hardware-configuration.nix` always stays local to each physical machine and is never copied between computers, even when the model/specs are identical.
@@ -73,6 +78,8 @@ The generated `/etc/nixos/hardware-configuration.nix` always stays local to each
 ## Adding an identical machine
 
 Reuse the existing model profile but create a new host entry with a unique hostname and the correct user for that physical computer. For example, another ThinkPad C13 can use `hosts/thinkpad-c13-2/configuration.nix` while importing the same `profiles/hardware/thinkpad-c13.nix` profile.
+
+Keep the desktop environment based on form factor: GNOME for laptops, KDE Plasma for desktops.
 
 Only the physical-machine identity belongs in the host file: hostname, user account and original `system.stateVersion`. The machine keeps its own `/etc/nixos/hardware-configuration.nix` locally.
 
