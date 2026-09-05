@@ -2,6 +2,8 @@
 
 This private repository manages multiple NixOS machines with shared settings, desktop-role profiles, reusable model-specific hardware profiles, and one host file per physical computer.
 
+The desktop environment convention is simple: **laptops use GNOME** and **desktops use KDE Plasma**.
+
 ```text
 nixos-config/
 ├── configuration.nix
@@ -40,10 +42,10 @@ nixos-config/
 
 User accounts are host-specific so each physical computer can keep its own login name. The Dell Inspiron 3501 keeps its existing `val` account; the other currently managed machines use `jason`.
 
-Desktop environments are separate profiles:
+Desktop environments are separate profiles and follow the repository convention:
 
-- `profiles/desktop-kde.nix` enables KDE Plasma 6 and SDDM.
-- `profiles/laptop-gnome.nix` enables GNOME and GDM and enables Desktop Icons NG (DING).
+- Laptops import `profiles/laptop-gnome.nix`, which enables GNOME, GDM and Desktop Icons NG (DING).
+- Desktops import `profiles/desktop-kde.nix`, which enables KDE Plasma 6 and SDDM.
 - `profiles/gaming.nix` is reserved for gaming-machine-specific tuning and services.
 
 Reusable model settings live under `profiles/hardware/`. These profiles hold settings that should be the same on machines of the same model, such as bootloader setup, graphics configuration and SSH settings.
@@ -99,7 +101,9 @@ cd ~/nixos-config
 cp -r hosts/thinkpad-c13 hosts/thinkpad-c13-2
 ```
 
-Then change only the physical-machine-specific details in the new host file: `networking.hostName`, the login user, and verify that `system.stateVersion` matches that machine's original installation. Keep the same `profiles/hardware/thinkpad-c13.nix` import when the model/specs match.
+Then change only the physical-machine-specific details in the new host file: `networking.hostName`, the login user, and verify that `system.stateVersion` matches that machine's original installation. Keep the same model profile when the model/specs match.
+
+The desktop profile follows the machine type automatically by convention: use `laptop-gnome.nix` for any laptop and `desktop-kde.nix` for any desktop.
 
 For a completely new model, start from the generic template:
 
@@ -108,7 +112,7 @@ cd ~/nixos-config
 cp -r hosts/_template hosts/MY-HOSTNAME
 ```
 
-Add the machine's desktop profile and hardware settings. Once a model-specific setup is known-good, reusable settings can live in `profiles/hardware/<model>.nix` so later identical machines only need a small host file.
+Add the correct desktop profile and hardware settings. Once a model-specific setup is known-good, reusable settings can live in `profiles/hardware/<model>.nix` so later identical machines only need a small host file.
 
 For the first rebuild on a newly added machine, explicitly select its host file:
 
@@ -118,4 +122,4 @@ sudo nixos-rebuild switch -I "nixos-config=$HOME/nixos-config/hosts/MY-HOSTNAME/
 
 After the hostname matches its host directory, use the normal updater.
 
-For a change that should affect every computer, edit `modules/common.nix`. For all KDE desktops, edit `profiles/desktop-kde.nix`. For all GNOME laptops, edit `profiles/laptop-gnome.nix`. For every machine of one hardware model, edit its file under `profiles/hardware/`. For one physical computer only, edit its file under `hosts/`.
+For a change that should affect every computer, edit `modules/common.nix`. For all desktops, edit `profiles/desktop-kde.nix`. For all laptops, edit `profiles/laptop-gnome.nix`. For every machine of one hardware model, edit its file under `profiles/hardware/`. For one physical computer only, edit its file under `hosts/`.
