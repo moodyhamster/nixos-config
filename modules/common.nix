@@ -4,6 +4,13 @@
   # Settings shared by every NixOS machine, regardless of desktop or hardware.
   networking.networkmanager.enable = true;
 
+  # Let machines find each other reliably as <hostname>.local on the LAN.
+  services.avahi = {
+    enable = true;
+    nssmdns4 = true;
+    openFirewall = true;
+  };
+
   time.timeZone = "Europe/London";
 
   i18n.defaultLocale = "en_US.UTF-8";
