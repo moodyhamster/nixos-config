@@ -5,6 +5,10 @@ set -u
 REPO="$HOME/nixos-config"
 
 pause() {
+  if [[ "${NIXOS_UPDATE_NO_PAUSE:-0}" == "1" ]]; then
+    return
+  fi
+
   echo
   read -r -p "Press Enter to close..." _ || true
 }
@@ -62,7 +66,7 @@ if sudo nixos-rebuild switch -I "nixos-config=$CONFIG"; then
 fi
 
 echo
- echo "Rebuild failed. The running NixOS generation was not replaced."
+echo "Rebuild failed. The running NixOS generation was not replaced."
 echo "Fix the configuration in GitHub or roll back the change, then try again."
 pause
 exit 1
