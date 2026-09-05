@@ -1,51 +1,64 @@
 # Machine plan
 
-This repository uses shared modules, desktop-role profiles and reusable model-specific hardware profiles. Each physical computer still gets its own `hosts/<hostname>/configuration.nix`.
+Each physical computer has a unique host directory with a shared machine base plus separate KDE and GNOME system configurations.
 
-Desktop environment convention:
+**KDE Plasma is currently the default desktop on every host.** GNOME is also available on every host as a separate build. A machine's selected desktop is stored locally in `/etc/nixos/desktop-environment`, so normal updates preserve the last successful choice.
 
-- **Laptops use GNOME** via `profiles/laptop-gnome.nix`.
-- **Desktops use KDE Plasma** via `profiles/desktop-kde.nix`.
+Every managed host has both `jason` and `val` as normal users. Both are members of `networkmanager` and `wheel`, so both can use `sudo`. Passwords are set locally and are never stored in Git.
 
-Every managed host has both `jason` and `val` as normal users. Both are members of `networkmanager` and `wheel`, so both can use `sudo`. Passwords are set locally on each machine and are never stored in Git.
+Identical physical machines use unique numbered hostnames such as `thinkpad-c13-2` and `thinkpad-c13-3`. They may reuse the same model profile, but each machine keeps its own generated `/etc/nixos/hardware-configuration.nix`.
 
-Identical machines use unique numbered hostnames such as `thinkpad-c13-2` and `thinkpad-c13-3`.
+## Host layout
 
-The generated `/etc/nixos/hardware-configuration.nix` always stays local to each physical machine and is never copied between computers, even when the model/specs are identical.
+Each real host uses this pattern:
+
+```text
+hosts/<hostname>/
+├── base.nix
+├── kde.nix
+├── gnome.nix
+└── configuration.nix
+```
+
+- `base.nix` contains machine identity, common settings, model profile and original `system.stateVersion`.
+- `kde.nix` imports `base.nix` plus `profiles/kde.nix`.
+- `gnome.nix` imports `base.nix` plus `profiles/gnome.nix`.
+- `configuration.nix` is a compatibility/default entry point and currently imports `kde.nix`.
 
 ## Dell OptiPlex desktop
 
 - Managed hostname: `dell-optiplex`
 - Users: `jason`, `val`
-- Desktop environment: KDE Plasma 6
+- Default desktop: KDE Plasma 6
+- Alternate desktop: GNOME
 - Bootloader: GRUB on `/dev/nvme0n1`
 - `system.stateVersion`: `26.05`
-- Role profiles: `desktop-kde.nix` + `gaming.nix`
+- Gaming profile: enabled
 - Model profile: `profiles/hardware/dell-optiplex.nix`
-- Host entry: `hosts/dell-optiplex/configuration.nix`
+- Host directory: `hosts/dell-optiplex/`
 
 ## Lenovo ThinkPad C13 Yoga Chromebook Gen 1
 
 - Managed hostname: `thinkpad-c13`
 - Users: `jason`, `val`
-- Desktop environment: GNOME
+- Default desktop: KDE Plasma 6
+- Alternate desktop: GNOME
 - CPU/GPU: AMD Ryzen 5 3500C with integrated Radeon Vega graphics
 - Boot mode: UEFI
 - Bootloader: systemd-boot
 - Storage: NVMe, FAT32 EFI partition mounted at `/boot`, ext4 root filesystem
 - `system.stateVersion`: `26.05`
-- Role profile: `laptop-gnome.nix`
 - Model profile: `profiles/hardware/thinkpad-c13.nix`
-- Host entry: `hosts/thinkpad-c13/configuration.nix`
-- OpenSSH is enabled for remote access from the local network.
-- AMD integrated graphics use the normal in-kernel `amdgpu` stack; no proprietary GPU configuration is needed.
+- Host directory: `hosts/thinkpad-c13/`
+- OpenSSH is enabled for local-network remote access.
 
 ## ASUS ROG Strix G16 (2023)
 
 - Managed hostname: `rog-strix-g16`
 - Users: `jason`, `val`
 - Model: `ROG Strix G614JV_G614JV`
-- Desktop environment: GNOME
+- Default desktop: KDE Plasma 6
+- Alternate desktop: GNOME
 - CPU: Intel Core i7-13650HX
 - Integrated GPU: Intel Raptor Lake-S UHD Graphics, PCI `0000:00:02.0`
 - Dedicated GPU: NVIDIA GeForce RTX 4060 Laptop GPU (AD107M), PCI `0000:01:00.0`
@@ -53,41 +66,51 @@ The generated `/etc/nixos/hardware-configuration.nix` always stays local to each
 - Bootloader: systemd-boot
 - Storage: 1 TB NVMe, 1 GB FAT32 EFI partition mounted at `/boot`, ext4 root filesystem
 - `system.stateVersion`: `26.05`
-- Role profiles: `laptop-gnome.nix` + `gaming.nix`
+- Gaming profile: enabled
 - Model profile: `profiles/hardware/rog-strix-g16.nix`
-- Host entry: `hosts/rog-strix-g16/configuration.nix`
-- NVIDIA's current driver stack is enabled with the open kernel module and PRIME render offload.
-- GNOME normally runs on the Intel iGPU; `nvidia-offload <command>` can launch an application on the RTX 4060.
-- OpenSSH is enabled for remote access from the local network.
+- Host directory: `hosts/rog-strix-g16/`
+- NVIDIA open kernel module and PRIME render offload are configured in the model profile.
+- OpenSSH is enabled for local-network remote access.
 
 ## Dell Inspiron 3501
 
 - Managed hostname: `dell-inspiron-3501`
 - Users: `jason`, `val`
-- Desktop environment: GNOME
+- Default desktop: KDE Plasma 6
+- Alternate desktop: GNOME
 - CPU: Intel Core i7-1165G7
 - GPU: Intel Iris Xe Graphics (Tiger Lake-LP GT2), PCI `0000:00:02.0`
 - Boot mode: UEFI
 - Bootloader: systemd-boot
 - Storage: 512 GB NVMe, 1 GB FAT32 EFI partition mounted at `/boot`, ext4 root filesystem
 - `system.stateVersion`: `26.05`
-- Role profile: `laptop-gnome.nix`
 - Model profile: `profiles/hardware/dell-inspiron-3501.nix`
-- Host entry: `hosts/dell-inspiron-3501/configuration.nix`
-- Intel graphics use the normal in-kernel driver stack; no proprietary GPU configuration is needed.
-- OpenSSH is enabled for remote access from the local network.
+- Host directory: `hosts/dell-inspiron-3501/`
+- OpenSSH is enabled for local-network remote access.
+
+## Switching desktops
+
+Switch a host to GNOME:
+
+```bash
+bash ~/nixos-config/switch-desktop.sh gnome
+```
+
+Switch it to KDE:
+
+```bash
+bash ~/nixos-config/switch-desktop.sh kde
+```
+
+The active NixOS build contains only the chosen desktop profile. User home-directory settings are not erased when switching.
 
 ## Adding an identical machine
 
-Reuse the existing model profile but create a new host entry with a unique hostname. For example, another ThinkPad C13 can use `hosts/thinkpad-c13-2/configuration.nix` while importing the same `profiles/hardware/thinkpad-c13.nix` profile.
+Copy the existing host directory for that model, assign a unique hostname, and verify the new machine's original `system.stateVersion`. Reuse the same `profiles/hardware/<model>.nix` when the model/specs match.
 
-Keep the desktop environment based on form factor: GNOME for laptops, KDE Plasma for desktops. Both shared user accounts come from `modules/common.nix` automatically.
+Do not copy another machine's `/etc/nixos/hardware-configuration.nix`; disk UUIDs and detected filesystem settings can differ even between identical models.
 
-Only the physical-machine identity and original `system.stateVersion` belong in the host file. The machine keeps its own `/etc/nixos/hardware-configuration.nix` locally.
-
-## Information to collect from future machines
-
-Useful commands when creating a new host entry:
+## Information to collect from a new model
 
 ```bash
 hostnamectl --static
@@ -101,4 +124,4 @@ lsblk -o NAME,SIZE,TYPE,FSTYPE,MOUNTPOINTS
 lspci -nnk | grep -A3 -E 'VGA|3D|Display'
 ```
 
-For a brand-new hardware model, start with settings in that host's configuration. Once the setup is known-good, move reusable bootloader/graphics/SSH settings into `profiles/hardware/<model>.nix` before adding more machines of that model.
+For a brand-new model, begin with `hosts/_template/`. Once its hardware setup is known-good, move reusable bootloader, graphics and SSH settings into `profiles/hardware/<model>.nix`.
