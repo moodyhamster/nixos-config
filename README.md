@@ -1,8 +1,8 @@
 # Jason's NixOS configuration
 
-This private repository manages multiple NixOS machines with shared settings, desktop-role profiles, reusable model-specific hardware profiles, and one host file per physical computer.
+This private repository manages multiple NixOS machines with shared settings, reusable hardware profiles, two shared user accounts, and separate GNOME/KDE system configurations for every host.
 
-The desktop environment convention is simple: **laptops use GNOME** and **desktops use KDE Plasma**.
+**KDE Plasma is currently the default desktop on every host.** GNOME remains available as a separate clean NixOS build for any machine.
 
 ```text
 nixos-config/
@@ -10,8 +10,8 @@ nixos-config/
 ├── modules/
 │   └── common.nix
 ├── profiles/
-│   ├── desktop-kde.nix
-│   ├── laptop-gnome.nix
+│   ├── kde.nix
+│   ├── gnome.nix
 │   ├── gaming.nix
 │   └── hardware/
 │       ├── dell-optiplex.nix
@@ -20,17 +20,17 @@ nixos-config/
 │       └── rog-strix-g16.nix
 ├── hosts/
 │   ├── dell-optiplex/
+│   │   ├── base.nix
+│   │   ├── kde.nix
+│   │   ├── gnome.nix
 │   │   └── configuration.nix
 │   ├── thinkpad-c13/
-│   │   └── configuration.nix
 │   ├── rog-strix-g16/
-│   │   └── configuration.nix
 │   ├── dell-inspiron-3501/
-│   │   └── configuration.nix
 │   └── _template/
-│       └── configuration.nix
 ├── MACHINES.md
 ├── update-nixos-config.sh
+├── switch-desktop.sh
 ├── Update NixOS.desktop
 ├── sync-clock.sh
 └── Sync Clock.desktop
@@ -38,33 +38,48 @@ nixos-config/
 
 ## How it is organized
 
-`modules/common.nix` contains settings and applications wanted on every machine, including networking, locale, PipeWire, printing, Firefox, Git/GitHub CLI, Brave, Discord, LibreWolf, LibreOffice Fresh, Zen Browser, qBittorrent, Lutris, Steam, Sticky and Proton VPN.
+`modules/common.nix` contains settings and applications shared by every machine, including networking, locale, PipeWire, printing, Firefox, Git/GitHub CLI, Brave, Discord, LibreWolf, LibreOffice Fresh, Zen Browser, qBittorrent, Lutris, Steam, Sticky and Proton VPN.
 
-Every managed host has both `jason` and `val` as normal users. Both accounts are members of `networkmanager` and `wheel`, so both can manage networking and use `sudo`. Passwords are deliberately set locally on each machine and are never stored in Git.
+Every managed host has both `jason` and `val` as normal users. Both accounts are members of `networkmanager` and `wheel`, so both can use `sudo`. Passwords are set locally on each machine and are never stored in Git.
 
-Desktop environments are separate profiles and follow the repository convention:
+Desktop environments are isolated into separate NixOS builds:
 
-- Laptops import `profiles/laptop-gnome.nix`, which enables GNOME, GDM and Desktop Icons NG (DING).
-- Desktops import `profiles/desktop-kde.nix`, which enables KDE Plasma 6 and SDDM.
-- `profiles/gaming.nix` is reserved for gaming-machine-specific tuning and services.
+- `profiles/kde.nix` enables KDE Plasma 6 and SDDM.
+- `profiles/gnome.nix` enables GNOME, GDM and Desktop Icons NG (DING).
+- A host's `kde.nix` imports only its base configuration plus the KDE profile.
+- A host's `gnome.nix` imports only its base configuration plus the GNOME profile.
 
-Reusable model settings live under `profiles/hardware/`. These profiles hold settings that should be the same on machines of the same model, such as bootloader setup, graphics configuration and SSH settings.
+This means switching desktops does not enable both desktop environments in the active system at the same time. Old packages may remain in `/nix/store` until garbage collection, and user settings in each home directory are preserved.
 
-Each physical computer still gets its own `hosts/<hostname>/configuration.nix`. The host file contains the machine's unique hostname and original `system.stateVersion`, then imports the matching desktop and model profiles. Shared user accounts come from `modules/common.nix`.
+Reusable model settings live under `profiles/hardware/`. These profiles contain settings shared by machines of the same model, such as bootloader, graphics and SSH configuration.
 
-The generated `/etc/nixos/hardware-configuration.nix` always stays local to each physical computer. Never copy it between machines, even when they are the exact same model, because disk UUIDs, filesystems and detected hardware values can differ.
+Each physical machine has a `hosts/<hostname>/base.nix` containing its machine identity, local generated hardware import, shared modules, model profile and original `system.stateVersion`. The generated `/etc/nixos/hardware-configuration.nix` always stays local to that physical computer and is never copied between machines.
 
-See `MACHINES.md` for hardware and host details.
+## Desktop selection
+
+KDE is the default when a machine has never selected a desktop. To switch a machine to GNOME:
+
+```bash
+bash ~/nixos-config/switch-desktop.sh gnome
+```
+
+To switch it back to KDE:
+
+```bash
+bash ~/nixos-config/switch-desktop.sh kde
+```
+
+A successful switch stores only the word `kde` or `gnome` in `/etc/nixos/desktop-environment`. Future normal updates keep using that selected desktop. The selection file is local to each machine and is not committed to GitHub.
 
 ## Normal updates
 
-Every configured machine can update itself with:
+Every configured machine updates itself with:
 
 ```bash
 bash ~/nixos-config/update-nixos-config.sh
 ```
 
-The updater pulls GitHub, detects the current hostname, selects `hosts/<hostname>/configuration.nix`, and rebuilds NixOS.
+The updater pulls GitHub, detects the hostname, reads the local desktop selection, then rebuilds `hosts/<hostname>/kde.nix` or `hosts/<hostname>/gnome.nix`. If no local selection exists, it uses KDE.
 
 The optional desktop launcher can be installed with:
 
@@ -73,8 +88,6 @@ mkdir -p ~/Desktop
 cp ~/nixos-config/'Update NixOS.desktop' ~/Desktop/
 chmod +x ~/Desktop/'Update NixOS.desktop'
 ```
-
-The launcher runs `update-nixos-config.sh` through Bash, so the repository copy of the shell script does not need to be executable.
 
 ## Cloning on a new machine
 
@@ -86,41 +99,26 @@ gh repo clone moodyhamster/nixos-config ~/nixos-config
 
 ## Adding another machine
 
-Every physical machine gets a unique hostname. For another machine of a model already managed, use a simple numbered name such as:
+Every physical computer gets a unique hostname. Identical machines can use numbered names such as `thinkpad-c13-2` and `thinkpad-c13-3`.
 
-```text
-thinkpad-c13
-thinkpad-c13-2
-thinkpad-c13-3
-```
-
-For an identical model, copy the existing host entry as a starting point. For example:
+For another machine of an already managed model, copy the existing host directory, then change the hostname and verify the original `system.stateVersion`:
 
 ```bash
 cd ~/nixos-config
 cp -r hosts/thinkpad-c13 hosts/thinkpad-c13-2
 ```
 
-Then change the new host's `networking.hostName` and verify that `system.stateVersion` matches that physical machine's original installation. Keep the same model profile when the model/specs match. Both shared users are already provided by `modules/common.nix`.
+The new physical machine must still keep its own `/etc/nixos/hardware-configuration.nix` locally.
 
-The desktop profile follows the machine type by convention: use `laptop-gnome.nix` for any laptop and `desktop-kde.nix` for any desktop.
+For a completely new model, copy `hosts/_template` and fill in `base.nix`. Once its hardware settings are known-good, reusable model settings can be moved into `profiles/hardware/<model>.nix`.
 
-For a completely new model, start from the generic template:
-
-```bash
-cd ~/nixos-config
-cp -r hosts/_template hosts/MY-HOSTNAME
-```
-
-Add the correct desktop profile and hardware settings. Once a model-specific setup is known-good, reusable settings can live in `profiles/hardware/<model>.nix` so later identical machines only need a small host file.
-
-For the first rebuild on a newly added machine, explicitly select its host file:
+For the first build on a new host, KDE is the default:
 
 ```bash
-sudo nixos-rebuild switch -I "nixos-config=$HOME/nixos-config/hosts/MY-HOSTNAME/configuration.nix"
+sudo nixos-rebuild switch -I "nixos-config=$HOME/nixos-config/hosts/MY-HOSTNAME/kde.nix"
 ```
 
-After the hostname matches its host directory, use the normal updater.
+After the hostname is active, use the normal updater or `switch-desktop.sh`.
 
 Because user passwords are not stored in Git, set or change them locally with:
 
@@ -129,4 +127,4 @@ sudo passwd jason
 sudo passwd val
 ```
 
-For a change that should affect every computer, edit `modules/common.nix`. For all desktops, edit `profiles/desktop-kde.nix`. For all laptops, edit `profiles/laptop-gnome.nix`. For every machine of one hardware model, edit its file under `profiles/hardware/`. For one physical computer only, edit its file under `hosts/`.
+For a change that should affect every computer, edit `modules/common.nix`. For KDE on every machine, edit `profiles/kde.nix`. For GNOME on every machine, edit `profiles/gnome.nix`. For one hardware model, edit its file under `profiles/hardware/`. For one physical computer only, edit its host directory under `hosts/`.
