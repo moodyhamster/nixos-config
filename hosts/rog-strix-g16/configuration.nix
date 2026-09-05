@@ -10,6 +10,12 @@
 
   networking.hostName = "rog-strix-g16";
 
+  users.users.jason = {
+    isNormalUser = true;
+    description = "jason";
+    extraGroups = [ "networkmanager" "wheel" ];
+  };
+
   # ASUS ROG Strix G16 (2023), model G614JV.
   # Intel Core i7-13650HX with Intel UHD iGPU + NVIDIA RTX 4060 Laptop GPU.
   # The generated hardware configuration remains local in /etc/nixos.
