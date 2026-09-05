@@ -1,17 +1,9 @@
 { ... }:
 
 {
+  # Default desktop for this host. Use switch-desktop.sh to change the
+  # persistent local selection between kde and gnome.
   imports = [
-    /etc/nixos/hardware-configuration.nix
-    ../../modules/common.nix
-    ../../profiles/laptop-gnome.nix
-    ../../profiles/hardware/thinkpad-c13.nix
+    ./kde.nix
   ];
-
-  # Physical-machine identity stays here; model-wide settings live in the
-  # shared ThinkPad C13 hardware profile above.
-  networking.hostName = "thinkpad-c13";
-
-  # Keep the value from this machine's original installation.
-  system.stateVersion = "26.05";
 }
