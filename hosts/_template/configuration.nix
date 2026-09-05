@@ -7,9 +7,12 @@
     /etc/nixos/hardware-configuration.nix
     ../../modules/common.nix
 
-    # Pick ONE desktop profile:
-    # ../../profiles/desktop-kde.nix
+    # Desktop environment convention:
+    # - laptops use GNOME
+    # - desktops use KDE Plasma
+    # Uncomment the one that matches this machine:
     # ../../profiles/laptop-gnome.nix
+    # ../../profiles/desktop-kde.nix
 
     # Add this too on gaming machines:
     # ../../profiles/gaming.nix
