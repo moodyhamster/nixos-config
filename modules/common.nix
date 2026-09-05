@@ -58,6 +58,21 @@ in
   nixpkgs.config.allowUnfree = true;
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
+  # Every managed host has both shared login accounts. Passwords are deliberately
+  # NOT stored in Git; set them locally with `sudo passwd jason` and
+  # `sudo passwd val`. Keeping users mutable preserves locally-set passwords.
+  users.mutableUsers = true;
+  users.users.jason = {
+    isNormalUser = true;
+    description = "jason";
+    extraGroups = [ "networkmanager" "wheel" ];
+  };
+  users.users.val = {
+    isNormalUser = true;
+    description = "val";
+    extraGroups = [ "networkmanager" "wheel" ];
+  };
+
   # Apps/tools deliberately shared across all machines.
   # KDE/GNOME desktop-specific apps belong in their desktop profiles instead.
   environment.systemPackages = with pkgs; [
