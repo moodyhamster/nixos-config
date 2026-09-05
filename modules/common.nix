@@ -43,19 +43,13 @@
     pulse.enable = true;
   };
 
-  users.users.jason = {
-    isNormalUser = true;
-    description = "jason";
-    extraGroups = [ "networkmanager" "wheel" ];
-  };
-
   programs.firefox.enable = true;
   programs.steam.enable = true;
 
   nixpkgs.config.allowUnfree = true;
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
-  # Apps/tools deliberately shared across all of Jason's machines.
+  # Apps/tools deliberately shared across all machines.
   # KDE/GNOME desktop-specific apps belong in their desktop profiles instead.
   environment.systemPackages = with pkgs; [
     git
