@@ -28,12 +28,9 @@
   # machines are the exact same model. Example: thinkpad-c13-2.
   networking.hostName = "CHANGE-ME";
 
-  # Keep the login account specific to this physical machine. Example:
-  # users.users.alex = {
-  #   isNormalUser = true;
-  #   description = "alex";
-  #   extraGroups = [ "networkmanager" "wheel" ];
-  # };
+  # The shared common module creates both jason and val on every host and puts
+  # both accounts in networkmanager and wheel. Passwords are set locally and
+  # are never stored in Git.
 
   # If there is no matching shared model profile yet, put the model-specific
   # bootloader/graphics settings here first, then move reusable settings into
