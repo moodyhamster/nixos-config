@@ -12,7 +12,7 @@ nixos-config/
 │   ├── laptop-gnome.nix
 │   └── gaming.nix
 ├── hosts/
-│   ├── nixos/
+│   ├── dell-optiplex/
 │   │   └── configuration.nix
 │   ├── thinkpad-c13/
 │   │   └── configuration.nix
@@ -45,9 +45,9 @@ The generated `/etc/nixos/hardware-configuration.nix` stays local to each comput
 
 See `MACHINES.md` for the current desktop and laptop details.
 
-## Current KDE desktop
+## Main KDE desktop
 
-The current host is `nixos` and imports the KDE and gaming profiles.
+The Dell OptiPlex uses hostname `dell-optiplex` and imports the KDE and gaming profiles.
 
 Clone the private repository:
 
@@ -57,10 +57,16 @@ gh auth login
 gh repo clone moodyhamster/nixos-config ~/nixos-config
 ```
 
-Rebuild it with:
+For the first rebuild that changes the old `nixos` hostname to `dell-optiplex`, run:
 
 ```bash
-sudo nixos-rebuild switch -I "nixos-config=$HOME/nixos-config/hosts/nixos/configuration.nix"
+sudo nixos-rebuild switch -I "nixos-config=$HOME/nixos-config/hosts/dell-optiplex/configuration.nix"
+```
+
+After that, the normal hostname-detecting updater works:
+
+```bash
+bash ~/nixos-config/update-nixos-config.sh
 ```
 
 Install the KDE desktop updater:
