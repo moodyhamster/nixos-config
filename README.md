@@ -1,6 +1,6 @@
 # Jason's NixOS configuration
 
-This private repository manages multiple NixOS machines with shared settings, desktop-role profiles, and one host file per computer.
+This private repository manages multiple NixOS machines with shared settings, desktop-role profiles, reusable model-specific hardware profiles, and one host file per physical computer.
 
 ```text
 nixos-config/
@@ -10,7 +10,12 @@ nixos-config/
 ├── profiles/
 │   ├── desktop-kde.nix
 │   ├── laptop-gnome.nix
-│   └── gaming.nix
+│   ├── gaming.nix
+│   └── hardware/
+│       ├── dell-optiplex.nix
+│       ├── dell-inspiron-3501.nix
+│       ├── thinkpad-c13.nix
+│       └── rog-strix-g16.nix
 ├── hosts/
 │   ├── dell-optiplex/
 │   │   └── configuration.nix
@@ -33,7 +38,7 @@ nixos-config/
 
 `modules/common.nix` contains settings and applications wanted on every machine, including networking, locale, PipeWire, printing, Firefox, Git/GitHub CLI, Brave, Discord, LibreWolf, LibreOffice Fresh, Zen Browser, qBittorrent, Lutris, Steam, Sticky and Proton VPN.
 
-User accounts are host-specific so each computer can keep its existing login name. The Dell Inspiron 3501 keeps its existing `val` account; the other currently managed machines use `jason`.
+User accounts are host-specific so each physical computer can keep its own login name. The Dell Inspiron 3501 keeps its existing `val` account; the other currently managed machines use `jason`.
 
 Desktop environments are separate profiles:
 
@@ -41,9 +46,11 @@ Desktop environments are separate profiles:
 - `profiles/laptop-gnome.nix` enables GNOME and GDM and enables Desktop Icons NG (DING).
 - `profiles/gaming.nix` is reserved for gaming-machine-specific tuning and services.
 
-Each computer gets `hosts/<hostname>/configuration.nix`. That file chooses the right profiles and contains machine-specific settings such as hostname, user account, bootloader, graphics configuration and `system.stateVersion`.
+Reusable model settings live under `profiles/hardware/`. These profiles hold settings that should be the same on machines of the same model, such as bootloader setup, graphics configuration and SSH settings.
 
-The generated `/etc/nixos/hardware-configuration.nix` stays local to each computer. Do not copy it between machines because it can contain disk UUIDs, filesystem configuration and detected hardware settings.
+Each physical computer still gets its own `hosts/<hostname>/configuration.nix`. The host file contains the machine's unique identity: hostname, login user and original `system.stateVersion`, then imports the matching desktop and model profiles.
+
+The generated `/etc/nixos/hardware-configuration.nix` always stays local to each physical computer. Never copy it between machines, even when they are the exact same model, because disk UUIDs, filesystems and detected hardware values can differ.
 
 See `MACHINES.md` for hardware and host details.
 
@@ -77,12 +84,31 @@ gh repo clone moodyhamster/nixos-config ~/nixos-config
 
 ## Adding another machine
 
-Create a new host from the template, then edit it with the machine's real hostname, existing user account, bootloader, hardware-specific options and original `system.stateVersion`.
+Every physical machine gets a unique hostname. For another machine of a model already managed, use a simple numbered name such as:
+
+```text
+thinkpad-c13
+thinkpad-c13-2
+thinkpad-c13-3
+```
+
+For an identical model, copy the existing host entry as a starting point. For example:
+
+```bash
+cd ~/nixos-config
+cp -r hosts/thinkpad-c13 hosts/thinkpad-c13-2
+```
+
+Then change only the physical-machine-specific details in the new host file: `networking.hostName`, the login user, and verify that `system.stateVersion` matches that machine's original installation. Keep the same `profiles/hardware/thinkpad-c13.nix` import when the model/specs match.
+
+For a completely new model, start from the generic template:
 
 ```bash
 cd ~/nixos-config
 cp -r hosts/_template hosts/MY-HOSTNAME
 ```
+
+Add the machine's desktop profile and hardware settings. Once a model-specific setup is known-good, reusable settings can live in `profiles/hardware/<model>.nix` so later identical machines only need a small host file.
 
 For the first rebuild on a newly added machine, explicitly select its host file:
 
@@ -92,4 +118,4 @@ sudo nixos-rebuild switch -I "nixos-config=$HOME/nixos-config/hosts/MY-HOSTNAME/
 
 After the hostname matches its host directory, use the normal updater.
 
-For a change that should affect every computer, edit `modules/common.nix`. For all KDE desktops, edit `profiles/desktop-kde.nix`. For all GNOME laptops, edit `profiles/laptop-gnome.nix`. For one computer only, edit its file under `hosts/`.
+For a change that should affect every computer, edit `modules/common.nix`. For all KDE desktops, edit `profiles/desktop-kde.nix`. For all GNOME laptops, edit `profiles/laptop-gnome.nix`. For every machine of one hardware model, edit its file under `profiles/hardware/`. For one physical computer only, edit its file under `hosts/`.
