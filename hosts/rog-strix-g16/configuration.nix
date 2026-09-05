@@ -13,12 +13,6 @@
   # shared ROG Strix G16 hardware profile above.
   networking.hostName = "rog-strix-g16";
 
-  users.users.jason = {
-    isNormalUser = true;
-    description = "jason";
-    extraGroups = [ "networkmanager" "wheel" ];
-  };
-
   # Keep the value from this machine's original installation.
   system.stateVersion = "26.05";
 }
