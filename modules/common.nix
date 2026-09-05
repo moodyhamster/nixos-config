@@ -68,6 +68,7 @@ in
     librewolf
     libreoffice-fresh
     zenBrowser
+    qbittorrent
     lutris
     sticky
     proton-vpn
