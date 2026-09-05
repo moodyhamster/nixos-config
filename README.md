@@ -40,7 +40,7 @@ nixos-config/
 
 `modules/common.nix` contains settings and applications wanted on every machine, including networking, locale, PipeWire, printing, Firefox, Git/GitHub CLI, Brave, Discord, LibreWolf, LibreOffice Fresh, Zen Browser, qBittorrent, Lutris, Steam, Sticky and Proton VPN.
 
-User accounts are host-specific so each physical computer can keep its own login name. The Dell Inspiron 3501 keeps its existing `val` account; the other currently managed machines use `jason`.
+Every managed host has both `jason` and `val` as normal users. Both accounts are members of `networkmanager` and `wheel`, so both can manage networking and use `sudo`. Passwords are deliberately set locally on each machine and are never stored in Git.
 
 Desktop environments are separate profiles and follow the repository convention:
 
@@ -50,7 +50,7 @@ Desktop environments are separate profiles and follow the repository convention:
 
 Reusable model settings live under `profiles/hardware/`. These profiles hold settings that should be the same on machines of the same model, such as bootloader setup, graphics configuration and SSH settings.
 
-Each physical computer still gets its own `hosts/<hostname>/configuration.nix`. The host file contains the machine's unique identity: hostname, login user and original `system.stateVersion`, then imports the matching desktop and model profiles.
+Each physical computer still gets its own `hosts/<hostname>/configuration.nix`. The host file contains the machine's unique hostname and original `system.stateVersion`, then imports the matching desktop and model profiles. Shared user accounts come from `modules/common.nix`.
 
 The generated `/etc/nixos/hardware-configuration.nix` always stays local to each physical computer. Never copy it between machines, even when they are the exact same model, because disk UUIDs, filesystems and detected hardware values can differ.
 
@@ -101,9 +101,9 @@ cd ~/nixos-config
 cp -r hosts/thinkpad-c13 hosts/thinkpad-c13-2
 ```
 
-Then change only the physical-machine-specific details in the new host file: `networking.hostName`, the login user, and verify that `system.stateVersion` matches that machine's original installation. Keep the same model profile when the model/specs match.
+Then change the new host's `networking.hostName` and verify that `system.stateVersion` matches that physical machine's original installation. Keep the same model profile when the model/specs match. Both shared users are already provided by `modules/common.nix`.
 
-The desktop profile follows the machine type automatically by convention: use `laptop-gnome.nix` for any laptop and `desktop-kde.nix` for any desktop.
+The desktop profile follows the machine type by convention: use `laptop-gnome.nix` for any laptop and `desktop-kde.nix` for any desktop.
 
 For a completely new model, start from the generic template:
 
@@ -121,5 +121,12 @@ sudo nixos-rebuild switch -I "nixos-config=$HOME/nixos-config/hosts/MY-HOSTNAME/
 ```
 
 After the hostname matches its host directory, use the normal updater.
+
+Because user passwords are not stored in Git, set or change them locally with:
+
+```bash
+sudo passwd jason
+sudo passwd val
+```
 
 For a change that should affect every computer, edit `modules/common.nix`. For all desktops, edit `profiles/desktop-kde.nix`. For all laptops, edit `profiles/laptop-gnome.nix`. For every machine of one hardware model, edit its file under `profiles/hardware/`. For one physical computer only, edit its file under `hosts/`.
