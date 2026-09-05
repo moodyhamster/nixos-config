@@ -1,8 +1,10 @@
 # Machine plan
 
-This repository uses shared modules plus role profiles. Each real computer gets its own `hosts/<hostname>/configuration.nix`.
+This repository uses shared modules, desktop-role profiles and reusable model-specific hardware profiles. Each physical computer still gets its own `hosts/<hostname>/configuration.nix`.
 
-User accounts are host-specific so machines can keep their existing login names while still sharing the same system applications and settings.
+User accounts are host-specific so machines can keep their existing login names while still sharing the same applications and model settings. Identical machines use unique numbered hostnames such as `thinkpad-c13-2` and `thinkpad-c13-3`.
+
+The generated `/etc/nixos/hardware-configuration.nix` always stays local to each physical machine and is never copied between computers, even when the model/specs are identical.
 
 ## Dell OptiPlex desktop
 
@@ -12,6 +14,7 @@ User accounts are host-specific so machines can keep their existing login names 
 - Bootloader: GRUB on `/dev/nvme0n1`
 - `system.stateVersion`: `26.05`
 - Role profiles: `desktop-kde.nix` + `gaming.nix`
+- Model profile: `profiles/hardware/dell-optiplex.nix`
 - Host entry: `hosts/dell-optiplex/configuration.nix`
 
 ## Lenovo ThinkPad C13 Yoga Chromebook Gen 1
@@ -25,6 +28,7 @@ User accounts are host-specific so machines can keep their existing login names 
 - Storage: NVMe, FAT32 EFI partition mounted at `/boot`, ext4 root filesystem
 - `system.stateVersion`: `26.05`
 - Role profile: `laptop-gnome.nix`
+- Model profile: `profiles/hardware/thinkpad-c13.nix`
 - Host entry: `hosts/thinkpad-c13/configuration.nix`
 - OpenSSH is enabled for remote access from the local network.
 - AMD integrated graphics use the normal in-kernel `amdgpu` stack; no proprietary GPU configuration is needed.
@@ -43,6 +47,7 @@ User accounts are host-specific so machines can keep their existing login names 
 - Storage: 1 TB NVMe, 1 GB FAT32 EFI partition mounted at `/boot`, ext4 root filesystem
 - `system.stateVersion`: `26.05`
 - Role profiles: `laptop-gnome.nix` + `gaming.nix`
+- Model profile: `profiles/hardware/rog-strix-g16.nix`
 - Host entry: `hosts/rog-strix-g16/configuration.nix`
 - NVIDIA's current driver stack is enabled with the open kernel module and PRIME render offload.
 - GNOME normally runs on the Intel iGPU; `nvidia-offload <command>` can launch an application on the RTX 4060.
@@ -60,9 +65,16 @@ User accounts are host-specific so machines can keep their existing login names 
 - Storage: 512 GB NVMe, 1 GB FAT32 EFI partition mounted at `/boot`, ext4 root filesystem
 - `system.stateVersion`: `26.05`
 - Role profile: `laptop-gnome.nix`
+- Model profile: `profiles/hardware/dell-inspiron-3501.nix`
 - Host entry: `hosts/dell-inspiron-3501/configuration.nix`
 - Intel graphics use the normal in-kernel driver stack; no proprietary GPU configuration is needed.
 - OpenSSH is enabled for remote access from the local network.
+
+## Adding an identical machine
+
+Reuse the existing model profile but create a new host entry with a unique hostname and the correct user for that physical computer. For example, another ThinkPad C13 can use `hosts/thinkpad-c13-2/configuration.nix` while importing the same `profiles/hardware/thinkpad-c13.nix` profile.
+
+Only the physical-machine identity belongs in the host file: hostname, user account and original `system.stateVersion`. The machine keeps its own `/etc/nixos/hardware-configuration.nix` locally.
 
 ## Information to collect from future machines
 
@@ -80,4 +92,4 @@ lsblk -o NAME,SIZE,TYPE,FSTYPE,MOUNTPOINTS
 lspci -nnk | grep -A3 -E 'VGA|3D|Display'
 ```
 
-Keep `/etc/nixos/hardware-configuration.nix` local to each computer. It contains machine-specific filesystems, UUIDs and detected hardware settings.
+For a brand-new hardware model, start with settings in that host's configuration. Once the setup is known-good, move reusable bootloader/graphics/SSH settings into `profiles/hardware/<model>.nix` before adding more machines of that model.
