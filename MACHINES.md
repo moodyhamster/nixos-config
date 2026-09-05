@@ -4,13 +4,15 @@ This repository uses shared modules plus role profiles. Each real computer gets 
 
 User accounts are host-specific so machines can keep their existing login names while still sharing the same system applications and settings.
 
-## Current desktop
+## Dell OptiPlex desktop
 
-- Managed hostname: `nixos`
+- Managed hostname: `dell-optiplex`
 - Login user: `jason`
 - Desktop environment: KDE Plasma 6
+- Bootloader: GRUB on `/dev/nvme0n1`
+- `system.stateVersion`: `26.05`
 - Role profiles: `desktop-kde.nix` + `gaming.nix`
-- Current host entry: `hosts/nixos/configuration.nix`
+- Host entry: `hosts/dell-optiplex/configuration.nix`
 
 ## Lenovo ThinkPad C13 Yoga Chromebook Gen 1
 
