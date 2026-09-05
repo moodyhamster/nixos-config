@@ -57,6 +57,7 @@
     brave
     discord
     librewolf
+    libreoffice-fresh
     lutris
     sticky
     proton-vpn
