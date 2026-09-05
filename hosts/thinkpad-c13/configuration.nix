@@ -12,12 +12,6 @@
   # shared ThinkPad C13 hardware profile above.
   networking.hostName = "thinkpad-c13";
 
-  users.users.jason = {
-    isNormalUser = true;
-    description = "jason";
-    extraGroups = [ "networkmanager" "wheel" ];
-  };
-
   # Keep the value from this machine's original installation.
   system.stateVersion = "26.05";
 }
