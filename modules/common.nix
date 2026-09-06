@@ -83,7 +83,8 @@ in
 
   # Machine-local shared storage for jason and val. The setgid bit keeps new
   # entries in the shared group, and the default ACL keeps them group-writable.
-  # The Sync Clock script is deployed here so either user can run the same copy.
+  # Sync Clock's script and launcher are deployed here so both users use the
+  # same machine-wide copies.
   system.activationScripts.sharedFolder.text = ''
     mkdir -p /srv/shared
     chown root:shared /srv/shared
@@ -91,6 +92,7 @@ in
     ${pkgs.acl}/bin/setfacl -m u::rwx,g::rwx,m::rwx,o::rx /srv/shared
     ${pkgs.acl}/bin/setfacl -m d:u::rwx,d:g::rwx,d:m::rwx,d:o::rx /srv/shared
     install -m 0775 -o root -g shared ${../sync-clock.sh} /srv/shared/sync-clock.sh
+    install -m 0775 -o root -g shared ${../Sync Clock.desktop} "/srv/shared/Sync Clock.desktop"
   '';
 
   # Apps/tools deliberately shared across all machines.
