@@ -4,7 +4,7 @@ Each physical computer has a unique host directory with a shared machine base pl
 
 KDE Plasma is the default desktop on every host. GNOME is available as a separate build. The selected desktop is stored locally in `/etc/nixos/desktop-environment`, so normal updates preserve the last successful choice.
 
-The permanent managed user is `kim`, with `networkmanager` and `wheel` membership. During the current migration, `jason` is also declared temporarily so an existing sudo-capable account remains available until `kim` has been verified everywhere. Passwords are set locally and are never stored in Git.
+The single managed user is `kim`, with `networkmanager` and `wheel` membership. Passwords are set locally and are never stored in Git.
 
 Identical physical machines use unique numbered hostnames such as `thinkpad-c13-2` and `thinkpad-c13-3`. They may reuse the same model profile, but each machine keeps its own generated `/etc/nixos/hardware-configuration.nix`.
 
@@ -26,7 +26,7 @@ hosts/<hostname>/
 ## Dell OptiPlex desktop
 
 - Managed hostname: `dell-optiplex`
-- Permanent user: `kim`
+- User: `kim`
 - Default desktop: KDE Plasma 6
 - Alternate desktop: GNOME
 - Bootloader: GRUB on `/dev/nvme0n1`
@@ -38,7 +38,7 @@ hosts/<hostname>/
 ## Lenovo ThinkPad C13 Yoga Chromebook Gen 1
 
 - Managed hostname: `thinkpad-c13`
-- Permanent user: `kim`
+- User: `kim`
 - Default desktop: KDE Plasma 6
 - Alternate desktop: GNOME
 - CPU/GPU: AMD Ryzen 5 3500C with integrated Radeon Vega graphics
@@ -53,7 +53,7 @@ hosts/<hostname>/
 ## ASUS ROG Strix G16 (2023)
 
 - Managed hostname: `rog-strix-g16`
-- Permanent user: `kim`
+- User: `kim`
 - Model: `ROG Strix G614JV_G614JV`
 - Default desktop: KDE Plasma 6
 - Alternate desktop: GNOME
@@ -73,7 +73,7 @@ hosts/<hostname>/
 ## Dell Inspiron 3501
 
 - Managed hostname: `dell-inspiron-3501`
-- Permanent user: `kim`
+- User: `kim`
 - Default desktop: KDE Plasma 6
 - Alternate desktop: GNOME
 - CPU: Intel Core i7-1165G7
@@ -97,12 +97,6 @@ nixos-switch-desktop kde
 ```
 
 The active build contains only the chosen desktop profile. Home-directory settings are preserved when switching.
-
-## Account migration
-
-`users.mutableUsers = true` remains enabled. The current configuration declares both `kim` and temporary `jason`; older undeclared local accounts are not automatically erased.
-
-Before removing an old account, set Kim's password, verify login and sudo access, and copy any wanted files or application profiles into `/home/kim`. Once the migration is complete on every machine, remove the temporary `jason` declaration from `modules/common.nix`.
 
 ## Adding an identical machine
 
