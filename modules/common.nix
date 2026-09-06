@@ -18,17 +18,14 @@ let
     (builtins.readFile ../sync-clock.sh);
 in
 {
-  # Settings shared by every NixOS machine, regardless of desktop or hardware.
   networking.networkmanager.enable = true;
 
-  # Let machines find each other reliably as <hostname>.local on the LAN.
   services.avahi = {
     enable = true;
     nssmdns4 = true;
     openFirewall = true;
   };
 
-  # Keep SSH available on every managed host for local-network administration.
   services.openssh = {
     enable = true;
     openFirewall = true;
@@ -56,7 +53,6 @@ in
 
   services.printing.enable = true;
 
-  # PipeWire audio.
   services.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = {
@@ -72,8 +68,6 @@ in
   nixpkgs.config.allowUnfree = true;
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
-  # The single managed login account. Passwords are set locally and are never
-  # stored in Git.
   users.mutableUsers = true;
   users.users.kim = {
     isNormalUser = true;
@@ -81,8 +75,6 @@ in
     extraGroups = [ "networkmanager" "wheel" ];
   };
 
-  # Apps/tools deliberately shared across all machines.
-  # KDE/GNOME desktop-specific apps belong in their desktop profiles instead.
   environment.systemPackages = with pkgs; [
     git
     gh
@@ -97,6 +89,7 @@ in
     lutris
     sticky
     proton-vpn
+    pokemmo-installer
     nixosUpdate
     nixosSwitchDesktop
     syncClock
