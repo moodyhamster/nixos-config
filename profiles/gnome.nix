@@ -22,6 +22,12 @@
             pkgs.gnomeExtensions.desktop-icons-ng-ding.extensionUuid
           ];
         };
+
+        # Prefer GNOME's dark style by default for every user. Users can still
+        # change this themselves in Settings because the value is not locked.
+        "org/gnome/desktop/interface" = {
+          color-scheme = "prefer-dark";
+        };
       };
     }
   ];
