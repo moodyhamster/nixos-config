@@ -1,6 +1,6 @@
 # Jason's NixOS configuration
 
-This private repository manages multiple NixOS machines with shared settings, reusable hardware profiles, two shared user accounts, and separate GNOME/KDE system configurations for every host.
+This public repository manages multiple NixOS machines with shared settings, reusable hardware profiles, two shared user accounts, and separate GNOME/KDE system configurations for every host.
 
 **KDE Plasma is currently the default desktop on every host.** GNOME remains available as a separate clean NixOS build for any machine.
 
@@ -38,7 +38,7 @@ nixos-config/
 
 ## How it is organized
 
-`modules/common.nix` contains settings and applications shared by every machine, including networking, locale, PipeWire, printing, Firefox, Git/GitHub CLI, `lm_sensors`, Brave, Discord, LibreWolf, LibreOffice Fresh, Zen Browser, qBittorrent, Lutris, Steam, Sticky and Proton VPN.
+`modules/common.nix` contains settings and applications shared by every machine, including networking, locale, PipeWire, printing, Firefox, Git/GitHub CLI, Codex, `lm_sensors`, Brave, Discord, LibreWolf, LibreOffice Fresh, Zen Browser, qBittorrent, Lutris, Steam, Sticky and Proton VPN.
 
 Every managed host has both `jason` and `val` as normal users. Both accounts are members of `networkmanager`, `wheel` and `shared`, so both can manage networking, use `sudo`, and read/write the shared folder. Passwords are set locally on each machine and are never stored in Git.
 
@@ -81,9 +81,9 @@ After the system-wide updater has been installed by a rebuild, either `jason` or
 nixos-update
 ```
 
-The command is installed in the system PATH, so the account running it does not need its own copy of `~/nixos-config`. It first prefers that account's checkout if one exists; otherwise it uses an existing checkout under `/home/jason/nixos-config` or `/home/val/nixos-config`. Git is run as the owner of that checkout, so a newly created sudo-capable account can reuse the existing owner's GitHub authentication.
+The updater uses one machine-wide checkout at `/var/lib/nixos-config`. If that checkout does not exist, it automatically clones the public repository there using `sudo`. Future runs pull that same checkout and rebuild the configuration for the current hostname and selected desktop.
 
-At least one account on each machine must still have cloned and authenticated to the private GitHub repository. GitHub credentials and tokens are never stored in this repository.
+Because the repository is public, no GitHub authentication is required for cloning or pulling. Authentication is only needed for pushing changes back to GitHub.
 
 The original repository-local command remains usable for compatibility:
 
@@ -91,7 +91,7 @@ The original repository-local command remains usable for compatibility:
 bash ~/nixos-config/update-nixos-config.sh
 ```
 
-The updater pulls GitHub, detects the hostname, reads the local desktop selection, then rebuilds `hosts/<hostname>/kde.nix` or `hosts/<hostname>/gnome.nix`. If no local selection exists, it uses KDE.
+The updater detects the hostname, reads the local desktop selection, then rebuilds `hosts/<hostname>/kde.nix` or `hosts/<hostname>/gnome.nix`. If no local selection exists, it uses KDE.
 
 The optional desktop launcher can be installed with:
 
@@ -101,19 +101,17 @@ cp ~/nixos-config/'Update NixOS.desktop' ~/Desktop/
 chmod +x ~/Desktop/'Update NixOS.desktop'
 ```
 
-The launcher now calls the system-wide `nixos-update` command.
+The launcher calls the system-wide `nixos-update` command.
 
 ## Cloning on a new machine
 
-Only one account needs to perform the initial private-repository clone and GitHub authentication:
+A personal clone is no longer required for normal system updates once `nixos-update` is installed. The updater creates `/var/lib/nixos-config` automatically from the public repository.
+
+If you want a personal checkout for editing or pushing changes, clone it normally:
 
 ```bash
-nix-shell -p git gh
-gh auth login
-gh repo clone moodyhamster/nixos-config ~/nixos-config
+git clone https://github.com/moodyhamster/nixos-config.git ~/nixos-config
 ```
-
-After that account completes the first rebuild, both shared users can use `nixos-update`.
 
 ## Adding another machine
 
