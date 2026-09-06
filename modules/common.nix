@@ -28,6 +28,12 @@ in
     openFirewall = true;
   };
 
+  # Keep SSH available on every managed host for local-network administration.
+  services.openssh = {
+    enable = true;
+    openFirewall = true;
+  };
+
   time.timeZone = "Europe/London";
 
   i18n.defaultLocale = "en_US.UTF-8";
