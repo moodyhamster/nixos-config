@@ -15,6 +15,20 @@ let
     (builtins.readFile ../update-nixos-config.sh);
   nixosSwitchDesktop = pkgs.writeShellScriptBin "nixos-switch-desktop"
     (builtins.readFile ../switch-desktop.sh);
+
+  # Keep the desktop launcher as a Nix store file so its display name can contain
+  # spaces without relying on a Nix path literal containing spaces.
+  syncClockDesktop = pkgs.writeText "Sync Clock.desktop" ''
+    [Desktop Entry]
+    Type=Application
+    Name=Sync Clock
+    Comment=Synchronize the system clock with network time
+    Exec=bash -lc "bash /srv/shared/sync-clock.sh"
+    Icon=preferences-system-time
+    Terminal=true
+    Categories=System;
+    StartupNotify=true
+  '';
 in
 {
   # Settings shared by every NixOS machine, regardless of desktop or hardware.
@@ -92,7 +106,7 @@ in
     ${pkgs.acl}/bin/setfacl -m u::rwx,g::rwx,m::rwx,o::rx /srv/shared
     ${pkgs.acl}/bin/setfacl -m d:u::rwx,d:g::rwx,d:m::rwx,d:o::rx /srv/shared
     install -m 0775 -o root -g shared ${../sync-clock.sh} /srv/shared/sync-clock.sh
-    install -m 0775 -o root -g shared ${../Sync Clock.desktop} "/srv/shared/Sync Clock.desktop"
+    install -m 0775 -o root -g shared ${syncClockDesktop} "/srv/shared/Sync Clock.desktop"
   '';
 
   # Apps/tools deliberately shared across all machines.
