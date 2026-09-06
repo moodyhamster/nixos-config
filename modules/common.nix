@@ -66,13 +66,18 @@ in
   nixpkgs.config.allowUnfree = true;
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
-  # Every managed host uses one normal login account named kim. Passwords are
-  # deliberately NOT stored in Git; set the password locally with
-  # `sudo passwd kim`. Keeping users mutable preserves locally-set passwords.
+  # kim is the new permanent login account. Keep jason temporarily during the
+  # migration so an existing sudo-capable account remains available until kim
+  # has a local password and login has been verified.
   users.mutableUsers = true;
   users.users.kim = {
     isNormalUser = true;
     description = "kim";
+    extraGroups = [ "networkmanager" "wheel" ];
+  };
+  users.users.jason = {
+    isNormalUser = true;
+    description = "jason";
     extraGroups = [ "networkmanager" "wheel" ];
   };
 
