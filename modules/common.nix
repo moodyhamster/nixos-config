@@ -9,25 +9,13 @@ let
   };
   zenBrowser = (import zenBrowserSrc { inherit pkgs; }).default;
 
-  # Install the repository updater and desktop switcher into the system PATH.
+  # Install repository helpers into the system PATH.
   nixosUpdate = pkgs.writeShellScriptBin "nixos-update"
     (builtins.readFile ../update-nixos-config.sh);
   nixosSwitchDesktop = pkgs.writeShellScriptBin "nixos-switch-desktop"
     (builtins.readFile ../switch-desktop.sh);
-
-  # Keep the desktop launcher as a Nix store file so its display name can contain
-  # spaces without relying on a Nix path literal containing spaces.
-  syncClockDesktop = pkgs.writeText "Sync Clock.desktop" ''
-    [Desktop Entry]
-    Type=Application
-    Name=Sync Clock
-    Comment=Synchronize the system clock with network time
-    Exec=bash -lc "bash /srv/shared/sync-clock.sh"
-    Icon=preferences-system-time
-    Terminal=true
-    Categories=System;
-    StartupNotify=true
-  '';
+  syncClock = pkgs.writeShellScriptBin "sync-clock"
+    (builtins.readFile ../sync-clock.sh);
 in
 {
   # Settings shared by every NixOS machine, regardless of desktop or hardware.
@@ -82,24 +70,11 @@ in
   # deliberately NOT stored in Git; set the password locally with
   # `sudo passwd kim`. Keeping users mutable preserves locally-set passwords.
   users.mutableUsers = true;
-  users.groups.shared = { };
   users.users.kim = {
     isNormalUser = true;
     description = "kim";
-    extraGroups = [ "networkmanager" "wheel" "shared" ];
+    extraGroups = [ "networkmanager" "wheel" ];
   };
-
-  # Machine-local storage used by kim for shared/system helper files. The Sync
-  # Clock script and launcher are deployed here as machine-wide copies.
-  system.activationScripts.sharedFolder.text = ''
-    mkdir -p /srv/shared
-    chown root:shared /srv/shared
-    chmod 2775 /srv/shared
-    ${pkgs.acl}/bin/setfacl -m u::rwx,g::rwx,m::rwx,o::rx /srv/shared
-    ${pkgs.acl}/bin/setfacl -m d:u::rwx,d:g::rwx,d:m::rwx,d:o::rx /srv/shared
-    install -m 0775 -o root -g shared ${../sync-clock.sh} /srv/shared/sync-clock.sh
-    install -m 0775 -o root -g shared ${syncClockDesktop} "/srv/shared/Sync Clock.desktop"
-  '';
 
   # Apps/tools deliberately shared across all machines.
   # KDE/GNOME desktop-specific apps belong in their desktop profiles instead.
@@ -119,5 +94,6 @@ in
     proton-vpn
     nixosUpdate
     nixosSwitchDesktop
+    syncClock
   ];
 }
