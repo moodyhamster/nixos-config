@@ -2,6 +2,8 @@
 
 set -u
 
+REPO="/var/lib/nixos-config"
+REPO_URL="https://github.com/moodyhamster/nixos-config.git"
 DESKTOP_FILE="/etc/nixos/desktop-environment"
 REQUESTED_DESKTOP="${1:-}"
 SAVE_SELECTION=0
@@ -15,56 +17,39 @@ pause() {
   read -r -p "Press Enter to close..." _ || true
 }
 
-find_repo() {
-  local candidate
-
-  # Prefer the current user's checkout when it exists. If this is a newly
-  # created account, fall back to the checkout owned by the other shared user.
-  for candidate in \
-    "$HOME/nixos-config" \
-    /home/jason/nixos-config \
-    /home/val/nixos-config
-  do
-    if [[ -d "$candidate/.git" ]]; then
-      printf '%s\n' "$candidate"
-      return 0
-    fi
-  done
-
-  return 1
-}
-
 echo "========================================"
 echo "        NixOS Configuration Update"
 echo "========================================"
 echo
 
-if ! REPO="$(find_repo)"; then
-  echo "ERROR: No nixos-config Git checkout was found on this machine."
-  echo "At least one account must clone moodyhamster/nixos-config first."
-  pause
-  exit 1
-fi
-
-REPO_OWNER="$(stat -c '%U' "$REPO")"
-
-echo "1/3 Pulling latest configuration from GitHub..."
-echo "Repository: $REPO"
-echo "Repository owner: $REPO_OWNER"
-
-# Pull as the owner of the checkout so a sudo-capable second account can use
-# the existing owner's GitHub authentication instead of needing another clone.
-if [[ "$(id -un)" == "$REPO_OWNER" ]]; then
-  PULL_CMD=(git -C "$REPO" pull --ff-only)
+# The repository is public, so keep one root-owned checkout for the whole
+# machine. Either sudo-capable user can update without a personal Git clone or
+# GitHub authentication.
+if [[ -d "$REPO/.git" ]]; then
+  echo "1/3 Pulling latest configuration from GitHub..."
+  echo "Repository: $REPO"
+  if ! sudo git -C "$REPO" pull --ff-only; then
+    echo
+    echo "ERROR: git pull failed."
+    pause
+    exit 1
+  fi
 else
-  PULL_CMD=(sudo -H -u "$REPO_OWNER" git -C "$REPO" pull --ff-only)
-fi
+  if [[ -e "$REPO" ]]; then
+    echo "ERROR: $REPO exists but is not a Git repository."
+    echo "Move or remove that path, then run nixos-update again."
+    pause
+    exit 1
+  fi
 
-if ! "${PULL_CMD[@]}"; then
-  echo
-  echo "ERROR: git pull failed."
-  pause
-  exit 1
+  echo "1/3 Creating the shared NixOS configuration checkout..."
+  echo "Repository: $REPO"
+  if ! sudo git clone "$REPO_URL" "$REPO"; then
+    echo
+    echo "ERROR: git clone failed."
+    pause
+    exit 1
+  fi
 fi
 
 HOST="$(hostnamectl --static 2>/dev/null || hostname)"
