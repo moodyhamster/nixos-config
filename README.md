@@ -40,7 +40,9 @@ nixos-config/
 
 `modules/common.nix` contains settings and applications shared by every machine, including networking, locale, PipeWire, printing, Firefox, Git/GitHub CLI, Brave, Discord, LibreWolf, LibreOffice Fresh, Zen Browser, qBittorrent, Lutris, Steam, Sticky and Proton VPN.
 
-Every managed host has both `jason` and `val` as normal users. Both accounts are members of `networkmanager` and `wheel`, so both can use `sudo`. Passwords are set locally on each machine and are never stored in Git.
+Every managed host has both `jason` and `val` as normal users. Both accounts are members of `networkmanager`, `wheel` and `shared`, so both can manage networking, use `sudo`, and read/write the shared folder. Passwords are set locally on each machine and are never stored in Git.
+
+Each host creates `/srv/shared` as a machine-local shared folder for `jason` and `val`. The directory uses the `shared` group and default ACLs so new files and folders remain writable by both users.
 
 Desktop environments are isolated into separate NixOS builds:
 
