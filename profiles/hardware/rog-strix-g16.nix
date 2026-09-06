@@ -27,9 +27,4 @@
       nvidiaBusId = "PCI:1@0:0:0";
     };
   };
-
-  services.openssh = {
-    enable = true;
-    openFirewall = true;
-  };
 }
