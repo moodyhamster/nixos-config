@@ -4,7 +4,7 @@ Each physical computer has a unique host directory with a shared machine base pl
 
 **KDE Plasma is currently the default desktop on every host.** GNOME is also available on every host as a separate build. A machine's selected desktop is stored locally in `/etc/nixos/desktop-environment`, so normal updates preserve the last successful choice.
 
-Every managed host declares one normal user named `kim`. The account is a member of `networkmanager`, `wheel` and `shared`, so it can manage networking, use `sudo`, and use `/srv/shared`. Passwords are set locally and are never stored in Git.
+Every managed host declares one normal user named `kim`. The account is a member of `networkmanager` and `wheel`, so it can manage networking and use `sudo`. Passwords are set locally and are never stored in Git.
 
 Identical physical machines use unique numbered hostnames such as `thinkpad-c13-2` and `thinkpad-c13-3`. They may reuse the same model profile, but each machine keeps its own generated `/etc/nixos/hardware-configuration.nix`.
 
