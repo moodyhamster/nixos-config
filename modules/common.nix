@@ -8,6 +8,13 @@ let
     rev = "fdb83f8fce835213fab7eab52c375926fe1a32dc";
   };
   zenBrowser = (import zenBrowserSrc { inherit pkgs; }).default;
+
+  # Install the repository updater into the system PATH so either shared user
+  # can update a machine even when that user does not have a personal clone.
+  nixosUpdate = pkgs.writeShellScriptBin "nixos-update"
+    (builtins.readFile ../update-nixos-config.sh);
+  nixosSwitchDesktop = pkgs.writeShellScriptBin "nixos-switch-desktop"
+    (builtins.readFile ../switch-desktop.sh);
 in
 {
   # Settings shared by every NixOS machine, regardless of desktop or hardware.
@@ -99,5 +106,7 @@ in
     lutris
     sticky
     proton-vpn
+    nixosUpdate
+    nixosSwitchDesktop
   ];
 }
