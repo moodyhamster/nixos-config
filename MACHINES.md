@@ -4,7 +4,7 @@ Each physical computer has a unique host directory with a shared machine base pl
 
 **KDE Plasma is currently the default desktop on every host.** GNOME is also available on every host as a separate build. A machine's selected desktop is stored locally in `/etc/nixos/desktop-environment`, so normal updates preserve the last successful choice.
 
-Every managed host has both `jason` and `val` as normal users. Both are members of `networkmanager` and `wheel`, so both can use `sudo`. Passwords are set locally and are never stored in Git.
+Every managed host declares one normal user named `kim`. The account is a member of `networkmanager`, `wheel` and `shared`, so it can manage networking, use `sudo`, and use `/srv/shared`. Passwords are set locally and are never stored in Git.
 
 Identical physical machines use unique numbered hostnames such as `thinkpad-c13-2` and `thinkpad-c13-3`. They may reuse the same model profile, but each machine keeps its own generated `/etc/nixos/hardware-configuration.nix`.
 
@@ -28,7 +28,7 @@ hosts/<hostname>/
 ## Dell OptiPlex desktop
 
 - Managed hostname: `dell-optiplex`
-- Users: `jason`, `val`
+- User: `kim`
 - Default desktop: KDE Plasma 6
 - Alternate desktop: GNOME
 - Bootloader: GRUB on `/dev/nvme0n1`
@@ -40,7 +40,7 @@ hosts/<hostname>/
 ## Lenovo ThinkPad C13 Yoga Chromebook Gen 1
 
 - Managed hostname: `thinkpad-c13`
-- Users: `jason`, `val`
+- User: `kim`
 - Default desktop: KDE Plasma 6
 - Alternate desktop: GNOME
 - CPU/GPU: AMD Ryzen 5 3500C with integrated Radeon Vega graphics
@@ -55,7 +55,7 @@ hosts/<hostname>/
 ## ASUS ROG Strix G16 (2023)
 
 - Managed hostname: `rog-strix-g16`
-- Users: `jason`, `val`
+- User: `kim`
 - Model: `ROG Strix G614JV_G614JV`
 - Default desktop: KDE Plasma 6
 - Alternate desktop: GNOME
@@ -75,7 +75,7 @@ hosts/<hostname>/
 ## Dell Inspiron 3501
 
 - Managed hostname: `dell-inspiron-3501`
-- Users: `jason`, `val`
+- User: `kim`
 - Default desktop: KDE Plasma 6
 - Alternate desktop: GNOME
 - CPU: Intel Core i7-1165G7
@@ -93,16 +93,20 @@ hosts/<hostname>/
 Switch a host to GNOME:
 
 ```bash
-bash ~/nixos-config/switch-desktop.sh gnome
+nixos-switch-desktop gnome
 ```
 
 Switch it to KDE:
 
 ```bash
-bash ~/nixos-config/switch-desktop.sh kde
+nixos-switch-desktop kde
 ```
 
 The active NixOS build contains only the chosen desktop profile. User home-directory settings are not erased when switching.
+
+## Migrating older users
+
+The managed configuration now declares only `kim`, while `users.mutableUsers = true` remains enabled. Existing older local users are therefore not automatically deleted during rebuild. After `kim` has a password, needed files have been copied to `/home/kim`, and login has been verified, old local accounts can be removed manually.
 
 ## Adding an identical machine
 
