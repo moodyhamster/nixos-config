@@ -9,7 +9,6 @@ let
   };
   zenBrowser = (import zenBrowserSrc { inherit pkgs; }).default;
 
-  # Install repository helpers into the system PATH.
   nixosUpdate = pkgs.writeShellScriptBin "nixos-update"
     (builtins.readFile ../update-nixos-config.sh);
   nixosSwitchDesktop = pkgs.writeShellScriptBin "nixos-switch-desktop"
@@ -19,6 +18,9 @@ let
 in
 {
   networking.networkmanager.enable = true;
+
+  hardware.bluetooth.enable = true;
+  services.blueman.enable = true;
 
   services.avahi = {
     enable = true;
