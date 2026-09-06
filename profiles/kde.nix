@@ -7,6 +7,16 @@
   services.displayManager.sddm.enable = true;
   services.desktopManager.plasma6.enable = true;
 
+  # Make Breeze Dark the system-wide Plasma default. Individual users can
+  # still choose a different theme in System Settings if they want.
+  environment.etc."xdg/kdeglobals".text = ''
+    [KDE]
+    LookAndFeelPackage=org.kde.breezedark.desktop
+
+    [General]
+    ColorScheme=BreezeDark
+  '';
+
   # KDE-specific applications are available to both shared users.
   environment.systemPackages = with pkgs; [
     kdePackages.kate
