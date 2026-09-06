@@ -89,6 +89,7 @@ in
   environment.systemPackages = with pkgs; [
     git
     gh
+    lm_sensors
     brave
     discord
     librewolf
