@@ -9,8 +9,7 @@ let
   };
   zenBrowser = (import zenBrowserSrc { inherit pkgs; }).default;
 
-  # Install the repository updater into the system PATH so either shared user
-  # can update a machine even when that user does not have a personal clone.
+  # Install the repository updater and desktop switcher into the system PATH.
   nixosUpdate = pkgs.writeShellScriptBin "nixos-update"
     (builtins.readFile ../update-nixos-config.sh);
   nixosSwitchDesktop = pkgs.writeShellScriptBin "nixos-switch-desktop"
@@ -79,26 +78,19 @@ in
   nixpkgs.config.allowUnfree = true;
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
-  # Every managed host has both shared login accounts. Passwords are deliberately
-  # NOT stored in Git; set them locally with `sudo passwd jason` and
-  # `sudo passwd val`. Keeping users mutable preserves locally-set passwords.
+  # Every managed host uses one normal login account named kim. Passwords are
+  # deliberately NOT stored in Git; set the password locally with
+  # `sudo passwd kim`. Keeping users mutable preserves locally-set passwords.
   users.mutableUsers = true;
   users.groups.shared = { };
-  users.users.jason = {
+  users.users.kim = {
     isNormalUser = true;
-    description = "jason";
-    extraGroups = [ "networkmanager" "wheel" "shared" ];
-  };
-  users.users.val = {
-    isNormalUser = true;
-    description = "val";
+    description = "kim";
     extraGroups = [ "networkmanager" "wheel" "shared" ];
   };
 
-  # Machine-local shared storage for jason and val. The setgid bit keeps new
-  # entries in the shared group, and the default ACL keeps them group-writable.
-  # Sync Clock's script and launcher are deployed here so both users use the
-  # same machine-wide copies.
+  # Machine-local storage used by kim for shared/system helper files. The Sync
+  # Clock script and launcher are deployed here as machine-wide copies.
   system.activationScripts.sharedFolder.text = ''
     mkdir -p /srv/shared
     chown root:shared /srv/shared
