@@ -1,9 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=Sync Clock
-Comment=Synchronize the system clock with network time
-Exec=sync-clock
-Icon=preferences-system-time
-Terminal=true
-Categories=System;
-StartupNotify=true
