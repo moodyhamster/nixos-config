@@ -8,7 +8,7 @@
   services.desktopManager.gnome.enable = true;
 
   # Make Desktop Icons NG available in every GNOME session and enable it by
-  # default so files and launchers in ~/Desktop are visible for both users.
+  # default so files and launchers in ~/Desktop are visible.
   services.desktopManager.gnome.sessionPath = [
     pkgs.gnomeExtensions.desktop-icons-ng-ding
   ];
@@ -23,8 +23,8 @@
           ];
         };
 
-        # Prefer GNOME's dark style by default for every user. Users can still
-        # change this themselves in Settings because the value is not locked.
+        # Prefer GNOME's dark style by default. The setting is not locked, so
+        # it can still be changed from GNOME Settings.
         "org/gnome/desktop/interface" = {
           color-scheme = "prefer-dark";
         };
