@@ -37,6 +37,19 @@ hosts/<hostname>/
 - Model profile: `profiles/hardware/dell-optiplex.nix`
 - Host directory: `hosts/dell-optiplex/`
 
+## Dell OptiPlex desktop 2
+
+- Managed hostname: `dell-optiplex-2`
+- User: `kim`
+- Default desktop: KDE Plasma 6
+- Alternate desktop: GNOME
+- Bootloader: GRUB on `/dev/nvme0n1`
+- `system.stateVersion`: `26.05`
+- Gaming profile: enabled
+- Model profile: `profiles/hardware/dell-optiplex.nix`
+- Host directory: `hosts/dell-optiplex-2/`
+- Uses this machine's own generated `/etc/nixos/hardware-configuration.nix`
+
 ## Lenovo ThinkPad C13 Yoga Chromebook Gen 1
 
 - Managed hostname: `thinkpad-c13`
