@@ -2,7 +2,7 @@
 Type=Application
 Name=Sync Clock
 Comment=Synchronize the system clock with network time
-Exec=bash -lc "bash /srv/shared/sync-clock.sh"
+Exec=sync-clock
 Icon=preferences-system-time
 Terminal=true
 Categories=System;
