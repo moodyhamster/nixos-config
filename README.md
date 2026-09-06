@@ -1,6 +1,6 @@
-# Jason's NixOS configuration
+# NixOS configuration
 
-This public repository manages multiple NixOS machines with shared settings, reusable hardware profiles, two shared user accounts, and separate GNOME/KDE system configurations for every host.
+This public repository manages multiple NixOS machines with shared settings, reusable hardware profiles, one managed user account, and separate GNOME/KDE system configurations for every host.
 
 **KDE Plasma is currently the default desktop on every host.** GNOME remains available as a separate clean NixOS build for any machine.
 
@@ -40,9 +40,9 @@ nixos-config/
 
 `modules/common.nix` contains settings and applications shared by every machine, including networking, locale, PipeWire, printing, Firefox, Git/GitHub CLI, Codex, `lm_sensors`, Brave, Discord, LibreWolf, LibreOffice Fresh, Zen Browser, qBittorrent, Lutris, Steam, Sticky and Proton VPN.
 
-Every managed host has both `jason` and `val` as normal users. Both accounts are members of `networkmanager`, `wheel` and `shared`, so both can manage networking, use `sudo`, and read/write the shared folder. Passwords are set locally on each machine and are never stored in Git.
+Every managed host declares one normal user named `kim`. The account is a member of `networkmanager`, `wheel` and `shared`, so it can manage networking, use `sudo`, and use `/srv/shared`. Passwords are set locally on each machine and are never stored in Git.
 
-Each host creates `/srv/shared` as a machine-local shared folder for `jason` and `val`. The directory uses the `shared` group and default ACLs so new files and folders remain writable by both users.
+Each host creates `/srv/shared` for machine-wide helper files and general storage. The Sync Clock script and launcher are deployed there during activation.
 
 Desktop environments are isolated into separate NixOS builds:
 
@@ -75,7 +75,7 @@ A successful switch stores only the word `kde` or `gnome` in `/etc/nixos/desktop
 
 ## Normal updates
 
-After the system-wide updater has been installed by a rebuild, either `jason` or `val` can update the machine with:
+The `kim` account can update a managed machine with:
 
 ```bash
 nixos-update
@@ -97,15 +97,25 @@ The optional desktop launcher can be installed with:
 
 ```bash
 mkdir -p ~/Desktop
-cp ~/nixos-config/'Update NixOS.desktop' ~/Desktop/
-chmod +x ~/Desktop/'Update NixOS.desktop'
+cp '/srv/shared/Sync Clock.desktop' ~/Desktop/
+chmod +x ~/Desktop/'Sync Clock.desktop'
 ```
 
-The launcher calls the system-wide `nixos-update` command.
+## Migrating existing machines to kim
+
+The configuration keeps `users.mutableUsers = true`. This means rebuilding will create and manage `kim`, but existing local accounts such as older `jason` or `val` accounts are not automatically erased. This makes migration safer: create `kim`, set its local password, move any wanted files into `/home/kim`, verify the new login, and only then remove old local accounts.
+
+Set the new password locally after the first rebuild:
+
+```bash
+sudo passwd kim
+```
+
+Do not store passwords or password hashes in this public repository.
 
 ## Cloning on a new machine
 
-A personal clone is no longer required for normal system updates once `nixos-update` is installed. The updater creates `/var/lib/nixos-config` automatically from the public repository.
+A personal clone is not required for normal system updates once `nixos-update` is installed. The updater creates `/var/lib/nixos-config` automatically from the public repository.
 
 If you want a personal checkout for editing or pushing changes, clone it normally:
 
@@ -135,12 +145,5 @@ sudo nixos-rebuild switch -I "nixos-config=$HOME/nixos-config/hosts/MY-HOSTNAME/
 ```
 
 After the hostname is active and the shared configuration has been rebuilt, use `nixos-update` or `nixos-switch-desktop`.
-
-Because user passwords are not stored in Git, set or change them locally with:
-
-```bash
-sudo passwd jason
-sudo passwd val
-```
 
 For a change that should affect every computer, edit `modules/common.nix`. For KDE on every machine, edit `profiles/kde.nix`. For GNOME on every machine, edit `profiles/gnome.nix`. For one hardware model, edit its file under `profiles/hardware/`. For one physical computer only, edit its host directory under `hosts/`.
