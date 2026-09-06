@@ -17,7 +17,7 @@
     ColorScheme=BreezeDark
   '';
 
-  # KDE-specific applications are available to both shared users.
+  # KDE-specific applications.
   environment.systemPackages = with pkgs; [
     kdePackages.kate
   ];
