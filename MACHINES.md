@@ -6,6 +6,8 @@ KDE Plasma is the default desktop on every host. GNOME is available as a separat
 
 The single managed user is `kim`, with `networkmanager` and `wheel` membership. Passwords are set locally and are never stored in Git.
 
+OpenSSH is enabled for local-network remote access on every managed host through `modules/common.nix`.
+
 Identical physical machines use unique numbered hostnames such as `thinkpad-c13-2` and `thinkpad-c13-3`. They may reuse the same model profile, but each machine keeps its own generated `/etc/nixos/hardware-configuration.nix`.
 
 ## Host layout
@@ -48,7 +50,6 @@ hosts/<hostname>/
 - `system.stateVersion`: `26.05`
 - Model profile: `profiles/hardware/thinkpad-c13.nix`
 - Host directory: `hosts/thinkpad-c13/`
-- OpenSSH: enabled for local-network remote access
 
 ## ASUS ROG Strix G16 (2023)
 
@@ -68,7 +69,6 @@ hosts/<hostname>/
 - Model profile: `profiles/hardware/rog-strix-g16.nix`
 - Host directory: `hosts/rog-strix-g16/`
 - NVIDIA open kernel module and PRIME render offload are configured in the model profile
-- OpenSSH: enabled for local-network remote access
 
 ## Dell Inspiron 3501
 
@@ -84,7 +84,6 @@ hosts/<hostname>/
 - `system.stateVersion`: `26.05`
 - Model profile: `profiles/hardware/dell-inspiron-3501.nix`
 - Host directory: `hosts/dell-inspiron-3501/`
-- OpenSSH: enabled for local-network remote access
 
 ## Switching desktops
 
@@ -118,4 +117,4 @@ lsblk -o NAME,SIZE,TYPE,FSTYPE,MOUNTPOINTS
 lspci -nnk | grep -A3 -E 'VGA|3D|Display'
 ```
 
-For a brand-new model, begin with `hosts/_template/`. Once its hardware setup is known-good, move reusable bootloader, graphics and SSH settings into `profiles/hardware/<model>.nix`.
+For a brand-new model, begin with `hosts/_template/`. Once its hardware setup is known-good, move reusable bootloader, graphics and other model-specific settings into `profiles/hardware/<model>.nix`.
