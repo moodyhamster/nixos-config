@@ -9,9 +9,4 @@
   boot.loader.efi.canTouchEfiVariables = true;
 
   hardware.graphics.enable = true;
-
-  services.openssh = {
-    enable = true;
-    openFirewall = true;
-  };
 }
