@@ -66,18 +66,12 @@ in
   nixpkgs.config.allowUnfree = true;
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
-  # kim is the new permanent login account. Keep jason temporarily during the
-  # migration so an existing sudo-capable account remains available until kim
-  # has a local password and login has been verified.
+  # The single managed login account. Passwords are set locally and are never
+  # stored in Git.
   users.mutableUsers = true;
   users.users.kim = {
     isNormalUser = true;
     description = "kim";
-    extraGroups = [ "networkmanager" "wheel" ];
-  };
-  users.users.jason = {
-    isNormalUser = true;
-    description = "jason";
     extraGroups = [ "networkmanager" "wheel" ];
   };
 
