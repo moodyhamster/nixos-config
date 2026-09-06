@@ -22,9 +22,7 @@ nixos-config/
 ├── MACHINES.md
 ├── update-nixos-config.sh
 ├── switch-desktop.sh
-├── sync-clock.sh
-├── Update NixOS.desktop
-└── Sync Clock.desktop
+└── sync-clock.sh
 ```
 
 ## Common configuration
@@ -72,14 +70,6 @@ After a rebuild, the clock helper is available system-wide:
 
 ```bash
 sync-clock
-```
-
-To place its launcher on Kim's desktop:
-
-```bash
-mkdir -p ~/Desktop
-cp '/var/lib/nixos-config/Sync Clock.desktop' ~/Desktop/
-chmod +x ~/Desktop/'Sync Clock.desktop'
 ```
 
 ## Host layout
