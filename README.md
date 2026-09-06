@@ -27,7 +27,9 @@ nixos-config/
 
 ## Common configuration
 
-`modules/common.nix` contains settings and applications used across all managed hosts, including networking, audio, printing, browsers, Git/GitHub CLI, Codex, `lm_sensors`, LibreOffice, qBittorrent, Lutris, Steam, Sticky, Proton VPN and the system helper commands.
+`modules/common.nix` contains settings and applications used across all managed hosts, including networking, OpenSSH remote access, audio, printing, browsers, Git/GitHub CLI, Codex, `lm_sensors`, LibreOffice, qBittorrent, Lutris, Steam, Sticky, Proton VPN and the system helper commands.
+
+OpenSSH is enabled on every managed host and the SSH firewall port is opened by the shared configuration.
 
 The single managed login account is `kim`, with membership in `networkmanager` and `wheel`. Passwords are set locally and are never stored in Git. `users.mutableUsers = true` keeps locally set passwords mutable across rebuilds.
 
