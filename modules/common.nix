@@ -62,16 +62,27 @@ in
   # NOT stored in Git; set them locally with `sudo passwd jason` and
   # `sudo passwd val`. Keeping users mutable preserves locally-set passwords.
   users.mutableUsers = true;
+  users.groups.shared = { };
   users.users.jason = {
     isNormalUser = true;
     description = "jason";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "networkmanager" "wheel" "shared" ];
   };
   users.users.val = {
     isNormalUser = true;
     description = "val";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "networkmanager" "wheel" "shared" ];
   };
+
+  # Machine-local shared storage for jason and val. The setgid bit keeps new
+  # entries in the shared group, and the default ACL keeps them group-writable.
+  system.activationScripts.sharedFolder.text = ''
+    mkdir -p /srv/shared
+    chown root:shared /srv/shared
+    chmod 2775 /srv/shared
+    ${pkgs.acl}/bin/setfacl -m u::rwx,g::rwx,m::rwx,o::rx /srv/shared
+    ${pkgs.acl}/bin/setfacl -m d:u::rwx,d:g::rwx,d:m::rwx,d:o::rx /srv/shared
+  '';
 
   # Apps/tools deliberately shared across all machines.
   # KDE/GNOME desktop-specific apps belong in their desktop profiles instead.
