@@ -40,9 +40,9 @@ nixos-config/
 
 `modules/common.nix` contains settings and applications shared by every machine, including networking, locale, PipeWire, printing, Firefox, Git/GitHub CLI, Codex, `lm_sensors`, Brave, Discord, LibreWolf, LibreOffice Fresh, Zen Browser, qBittorrent, Lutris, Steam, Sticky and Proton VPN.
 
-Every managed host declares one normal user named `kim`. The account is a member of `networkmanager`, `wheel` and `shared`, so it can manage networking, use `sudo`, and use `/srv/shared`. Passwords are set locally on each machine and are never stored in Git.
+Every managed host declares one normal user named `kim`. The account is a member of `networkmanager` and `wheel`, so it can manage networking and use `sudo`. Passwords are set locally on each machine and are never stored in Git.
 
-Each host creates `/srv/shared` for machine-wide helper files and general storage. The Sync Clock script and launcher are deployed there during activation.
+The old `/srv/shared` folder and `shared` group are no longer part of the managed configuration. Sync Clock is installed as the system-wide `sync-clock` command instead.
 
 Desktop environments are isolated into separate NixOS builds:
 
@@ -93,11 +93,17 @@ bash ~/nixos-config/update-nixos-config.sh
 
 The updater detects the hostname, reads the local desktop selection, then rebuilds `hosts/<hostname>/kde.nix` or `hosts/<hostname>/gnome.nix`. If no local selection exists, it uses KDE.
 
+Sync Clock can be run directly after a rebuild with:
+
+```bash
+sync-clock
+```
+
 The optional desktop launcher can be installed with:
 
 ```bash
 mkdir -p ~/Desktop
-cp '/srv/shared/Sync Clock.desktop' ~/Desktop/
+cp '/var/lib/nixos-config/Sync Clock.desktop' ~/Desktop/
 chmod +x ~/Desktop/'Sync Clock.desktop'
 ```
 
