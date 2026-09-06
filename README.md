@@ -38,7 +38,7 @@ nixos-config/
 
 ## How it is organized
 
-`modules/common.nix` contains settings and applications shared by every machine, including networking, locale, PipeWire, printing, Firefox, Git/GitHub CLI, Brave, Discord, LibreWolf, LibreOffice Fresh, Zen Browser, qBittorrent, Lutris, Steam, Sticky and Proton VPN.
+`modules/common.nix` contains settings and applications shared by every machine, including networking, locale, PipeWire, printing, Firefox, Git/GitHub CLI, `lm_sensors`, Brave, Discord, LibreWolf, LibreOffice Fresh, Zen Browser, qBittorrent, Lutris, Steam, Sticky and Proton VPN.
 
 Every managed host has both `jason` and `val` as normal users. Both accounts are members of `networkmanager`, `wheel` and `shared`, so both can manage networking, use `sudo`, and read/write the shared folder. Passwords are set locally on each machine and are never stored in Git.
 
@@ -62,20 +62,30 @@ Each physical machine has a `hosts/<hostname>/base.nix` containing its machine i
 KDE is the default when a machine has never selected a desktop. To switch a machine to GNOME:
 
 ```bash
-bash ~/nixos-config/switch-desktop.sh gnome
+nixos-switch-desktop gnome
 ```
 
 To switch it back to KDE:
 
 ```bash
-bash ~/nixos-config/switch-desktop.sh kde
+nixos-switch-desktop kde
 ```
 
 A successful switch stores only the word `kde` or `gnome` in `/etc/nixos/desktop-environment`. Future normal updates keep using that selected desktop. The selection file is local to each machine and is not committed to GitHub.
 
 ## Normal updates
 
-Every configured machine updates itself with:
+After the system-wide updater has been installed by a rebuild, either `jason` or `val` can update the machine with:
+
+```bash
+nixos-update
+```
+
+The command is installed in the system PATH, so the account running it does not need its own copy of `~/nixos-config`. It first prefers that account's checkout if one exists; otherwise it uses an existing checkout under `/home/jason/nixos-config` or `/home/val/nixos-config`. Git is run as the owner of that checkout, so a newly created sudo-capable account can reuse the existing owner's GitHub authentication.
+
+At least one account on each machine must still have cloned and authenticated to the private GitHub repository. GitHub credentials and tokens are never stored in this repository.
+
+The original repository-local command remains usable for compatibility:
 
 ```bash
 bash ~/nixos-config/update-nixos-config.sh
@@ -91,13 +101,19 @@ cp ~/nixos-config/'Update NixOS.desktop' ~/Desktop/
 chmod +x ~/Desktop/'Update NixOS.desktop'
 ```
 
+The launcher now calls the system-wide `nixos-update` command.
+
 ## Cloning on a new machine
+
+Only one account needs to perform the initial private-repository clone and GitHub authentication:
 
 ```bash
 nix-shell -p git gh
 gh auth login
 gh repo clone moodyhamster/nixos-config ~/nixos-config
 ```
+
+After that account completes the first rebuild, both shared users can use `nixos-update`.
 
 ## Adding another machine
 
@@ -120,7 +136,7 @@ For the first build on a new host, KDE is the default:
 sudo nixos-rebuild switch -I "nixos-config=$HOME/nixos-config/hosts/MY-HOSTNAME/kde.nix"
 ```
 
-After the hostname is active, use the normal updater or `switch-desktop.sh`.
+After the hostname is active and the shared configuration has been rebuilt, use `nixos-update` or `nixos-switch-desktop`.
 
 Because user passwords are not stored in Git, set or change them locally with:
 
