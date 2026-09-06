@@ -31,9 +31,7 @@ nixos-config/
 
 `modules/common.nix` contains settings and applications used across all managed hosts, including networking, audio, printing, browsers, Git/GitHub CLI, Codex, `lm_sensors`, LibreOffice, qBittorrent, Lutris, Steam, Sticky, Proton VPN and the system helper commands.
 
-The permanent login account is `kim`, with membership in `networkmanager` and `wheel`. Passwords are set locally and are never stored in Git.
-
-During the current account migration, `jason` is also declared temporarily so an existing sudo-capable login remains available until `kim` has been tested on every machine. `users.mutableUsers = true` remains enabled so locally set passwords are preserved.
+The single managed login account is `kim`, with membership in `networkmanager` and `wheel`. Passwords are set locally and are never stored in Git. `users.mutableUsers = true` keeps locally set passwords mutable across rebuilds.
 
 ## Desktop profiles
 
@@ -76,31 +74,13 @@ After a rebuild, the clock helper is available system-wide:
 sync-clock
 ```
 
-To place its launcher on the current user's desktop:
+To place its launcher on Kim's desktop:
 
 ```bash
 mkdir -p ~/Desktop
 cp '/var/lib/nixos-config/Sync Clock.desktop' ~/Desktop/
 chmod +x ~/Desktop/'Sync Clock.desktop'
 ```
-
-## Migrating to kim
-
-On an existing machine, rebuild first, set Kim's local password, then verify the new login before removing an older account:
-
-```bash
-sudo passwd kim
-```
-
-After logging in as `kim`, verify sudo access:
-
-```bash
-sudo whoami
-```
-
-It should print `root`. Copy any files or application profiles you want to keep into `/home/kim` and fix ownership before deleting an older home directory.
-
-Once `kim` is confirmed on every machine, remove the temporary `jason` declaration from `modules/common.nix`.
 
 ## Host layout
 
