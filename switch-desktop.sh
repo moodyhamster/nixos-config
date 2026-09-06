@@ -14,8 +14,8 @@ case "$DESKTOP" in
     ;;
 esac
 
-# Prefer the system-wide command so this works for either shared user. Keep a
-# repository-local fallback for machines that have not rebuilt this change yet.
+# Prefer the system-wide updater. Keep a repository-local fallback for machines
+# that have not yet rebuilt the helper into the system PATH.
 if command -v nixos-update >/dev/null 2>&1; then
   exec nixos-update "$DESKTOP"
 fi
