@@ -8,10 +8,17 @@ case "$DESKTOP" in
   kde|gnome)
     ;;
   *)
-    echo "Usage: bash ~/nixos-config/switch-desktop.sh kde"
-    echo "   or: bash ~/nixos-config/switch-desktop.sh gnome"
+    echo "Usage: nixos-switch-desktop kde"
+    echo "   or: nixos-switch-desktop gnome"
     exit 1
     ;;
 esac
 
-exec bash "$HOME/nixos-config/update-nixos-config.sh" "$DESKTOP"
+# Prefer the system-wide command so this works for either shared user. Keep a
+# repository-local fallback for machines that have not rebuilt this change yet.
+if command -v nixos-update >/dev/null 2>&1; then
+  exec nixos-update "$DESKTOP"
+fi
+
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+exec bash "$SCRIPT_DIR/update-nixos-config.sh" "$DESKTOP"
