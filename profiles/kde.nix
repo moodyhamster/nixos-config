@@ -20,5 +20,6 @@
   # KDE-specific applications.
   environment.systemPackages = with pkgs; [
     kdePackages.kate
+    kdePackages.kcalc
   ];
 }
