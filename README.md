@@ -28,7 +28,7 @@ nixos-config/
 
 ## Common configuration
 
-`modules/common.nix` contains settings and applications used across all managed hosts, including networking, OpenSSH remote access, audio, printing, browsers, Git/GitHub CLI, Codex, `lm_sensors`, LibreOffice, qBittorrent, Lutris, Steam, Sticky, Proton VPN, VLC, fastfetch and the system helper commands.
+`modules/common.nix` contains settings and applications used across all managed hosts, including networking, OpenSSH remote access, audio, printing, browsers, Git/GitHub CLI, Codex, `lm_sensors`, LibreOffice, qBittorrent, Lutris, Steam, Sticky, Proton VPN, VLC, fastfetch and the `nixos-update` helper.
 
 OpenSSH is enabled on every managed host and the SSH firewall port is opened by the shared configuration.
 
@@ -54,7 +54,7 @@ The repository is public, so cloning and pulling do not require GitHub authentic
 
 ## Sync Clock
 
-After a rebuild, the clock helper is available system-wide:
+The `sync-clock` helper is installed only on hosts that use `profiles/hardware/dell-optiplex.nix`, so it is available on all managed Dell OptiPlex machines without being installed on laptops or unrelated hosts.
 
 ```bash
 sync-clock
