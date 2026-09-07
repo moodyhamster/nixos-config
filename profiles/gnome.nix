@@ -4,6 +4,7 @@
   # GNOME desktop profile. Import this from a host's gnome.nix so GNOME is
   # the only desktop environment enabled in that system build.
   services.xserver.enable = true;
+  services.displayManager.sddm.enable = false;
   services.displayManager.gdm.enable = true;
   services.desktopManager.gnome.enable = true;
 
