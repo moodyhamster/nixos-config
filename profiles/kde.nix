@@ -7,6 +7,9 @@
   services.displayManager.sddm.enable = true;
   services.desktopManager.plasma6.enable = true;
 
+  hardware.bluetooth.enable = true;
+  services.blueman.enable = true;
+
   # Make Breeze Dark the system-wide Plasma default. Individual users can
   # still choose a different theme in System Settings if they want.
   environment.etc."xdg/kdeglobals".text = ''
