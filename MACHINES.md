@@ -32,6 +32,7 @@ hosts/<hostname>/
 - `system.stateVersion`: `26.05`
 - Gaming profile: enabled
 - Model profile: `profiles/hardware/dell-optiplex.nix`
+- `sync-clock` helper: enabled by the OptiPlex model profile
 - Host directory: `hosts/dell-optiplex/`
 
 ## Dell OptiPlex desktop 2
@@ -43,6 +44,7 @@ hosts/<hostname>/
 - `system.stateVersion`: `26.05`
 - Gaming profile: enabled
 - Model profile: `profiles/hardware/dell-optiplex.nix`
+- `sync-clock` helper: enabled by the OptiPlex model profile
 - Host directory: `hosts/dell-optiplex-2/`
 - Uses this machine's own generated `/etc/nixos/hardware-configuration.nix`
 
