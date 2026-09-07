@@ -1,13 +1,12 @@
 { pkgs, ... }:
 
 {
-  # KDE Plasma desktop profile. Import this from a host's kde.nix so KDE is
-  # the only desktop environment enabled in that system build.
+  # KDE Plasma is the desktop environment used by every managed host.
   services.xserver.enable = true;
-  services.displayManager.gdm.enable = false;
   services.displayManager.sddm.enable = true;
   services.desktopManager.plasma6.enable = true;
 
+  # KDE uses Blueman for Bluetooth management.
   hardware.bluetooth.enable = true;
   services.blueman.enable = true;
 
