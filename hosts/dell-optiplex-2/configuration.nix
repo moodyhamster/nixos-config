@@ -1,8 +1,7 @@
 { ... }:
 
 {
-  # Default desktop for this host. Use switch-desktop.sh to change the
-  # persistent local selection between kde and gnome.
+  # Standard KDE entry point for this host.
   imports = [
     ./kde.nix
   ];
