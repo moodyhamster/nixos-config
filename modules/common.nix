@@ -92,6 +92,8 @@ in
     sticky
     proton-vpn
     pokemmo-installer
+    vlc
+    fastfetch
     nixosUpdate
     nixosSwitchDesktop
     syncClock
