@@ -11,8 +11,6 @@ let
 
   nixosUpdate = pkgs.writeShellScriptBin "nixos-update"
     (builtins.readFile ../update-nixos-config.sh);
-  nixosSwitchDesktop = pkgs.writeShellScriptBin "nixos-switch-desktop"
-    (builtins.readFile ../switch-desktop.sh);
   syncClock = pkgs.writeShellScriptBin "sync-clock"
     (builtins.readFile ../sync-clock.sh);
 in
@@ -92,7 +90,6 @@ in
     vlc
     fastfetch
     nixosUpdate
-    nixosSwitchDesktop
     syncClock
   ];
 }
