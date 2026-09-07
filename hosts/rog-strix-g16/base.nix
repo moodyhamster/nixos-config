@@ -4,6 +4,7 @@
   imports = [
     /etc/nixos/hardware-configuration.nix
     ../../modules/common.nix
+    ../../profiles/laptop.nix
     ../../profiles/gaming.nix
     ../../profiles/hardware/rog-strix-g16.nix
   ];
