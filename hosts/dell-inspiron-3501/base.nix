@@ -4,6 +4,7 @@
   imports = [
     /etc/nixos/hardware-configuration.nix
     ../../modules/common.nix
+    ../../profiles/laptop.nix
     ../../profiles/hardware/dell-inspiron-3501.nix
   ];
 
