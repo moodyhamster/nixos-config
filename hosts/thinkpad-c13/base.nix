@@ -4,6 +4,7 @@
   imports = [
     /etc/nixos/hardware-configuration.nix
     ../../modules/common.nix
+    ../../profiles/laptop.nix
     ../../profiles/hardware/thinkpad-c13.nix
   ];
 
