@@ -21,5 +21,6 @@
   environment.systemPackages = with pkgs; [
     kdePackages.kate
     kdePackages.kcalc
+    kdePackages.krdc
   ];
 }
