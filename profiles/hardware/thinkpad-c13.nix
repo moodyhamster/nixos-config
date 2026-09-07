@@ -7,4 +7,8 @@
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+
+  # Expose the built-in accelerometer through iio-sensor-proxy so desktop
+  # environments can automatically rotate the display in tablet mode.
+  hardware.sensor.iio.enable = true;
 }
