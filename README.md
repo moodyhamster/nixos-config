@@ -2,7 +2,7 @@
 
 Public multi-host NixOS configuration for the machines in `MACHINES.md`.
 
-KDE Plasma is the default desktop on every host. GNOME is available as a separate build, and only the selected desktop is enabled in the active system configuration.
+KDE Plasma 6 is the desktop environment on every managed host.
 
 ```text
 nixos-config/
@@ -10,50 +10,35 @@ nixos-config/
 │   └── common.nix
 ├── profiles/
 │   ├── kde.nix
-│   ├── gnome.nix
 │   ├── gaming.nix
+│   ├── laptop.nix
 │   └── hardware/
 ├── hosts/
 │   ├── dell-optiplex/
 │   ├── dell-optiplex-2/
 │   ├── dell-inspiron-3501/
 │   ├── thinkpad-c13/
+│   ├── thinkpad-c13-2/
 │   ├── rog-strix-g16/
 │   └── _template/
 ├── MACHINES.md
 ├── update-nixos-config.sh
-├── switch-desktop.sh
 └── sync-clock.sh
 ```
 
 ## Common configuration
 
-`modules/common.nix` contains settings and applications used across all managed hosts, including networking, OpenSSH remote access, audio, printing, browsers, Git/GitHub CLI, Codex, `lm_sensors`, LibreOffice, qBittorrent, Lutris, Steam, Sticky, Proton VPN and the system helper commands.
+`modules/common.nix` contains settings and applications used across all managed hosts, including networking, OpenSSH remote access, audio, printing, browsers, Git/GitHub CLI, Codex, `lm_sensors`, LibreOffice, qBittorrent, Lutris, Steam, Sticky, Proton VPN, VLC, fastfetch and the system helper commands.
 
 OpenSSH is enabled on every managed host and the SSH firewall port is opened by the shared configuration.
 
 The single managed login account is `kim`, with membership in `networkmanager` and `wheel`. Passwords are set locally and are never stored in Git. `users.mutableUsers = true` keeps locally set passwords mutable across rebuilds.
 
-## Desktop profiles
+## KDE Plasma
 
-- `profiles/kde.nix` enables KDE Plasma 6 and SDDM and defaults to Breeze Dark.
-- `profiles/gnome.nix` enables GNOME and GDM, enables Desktop Icons NG, and defaults to GNOME's dark style.
-- `hosts/<hostname>/kde.nix` imports the host base plus the KDE profile.
-- `hosts/<hostname>/gnome.nix` imports the host base plus the GNOME profile.
+`profiles/kde.nix` enables KDE Plasma 6 and SDDM, provides the KDE application set, defaults to Breeze Dark, and enables Bluetooth with Blueman.
 
-The selected desktop is stored locally in `/etc/nixos/desktop-environment` and is not committed to Git.
-
-Switch desktops with:
-
-```bash
-nixos-switch-desktop gnome
-```
-
-or:
-
-```bash
-nixos-switch-desktop kde
-```
+Each host's `kde.nix` imports its machine base plus the shared KDE profile. GNOME and the desktop-switching helper are not part of this repository.
 
 ## Updates
 
@@ -63,7 +48,7 @@ Normal updates use one machine-wide checkout at `/var/lib/nixos-config`:
 nixos-update
 ```
 
-If the checkout does not exist, the updater clones the public repository there. Later runs pull the same checkout, detect the current hostname and selected desktop, and rebuild the matching host configuration.
+If the checkout does not exist, the updater clones the public repository there. Later runs pull the same checkout, detect the current hostname, and rebuild that host's KDE configuration.
 
 The repository is public, so cloning and pulling do not require GitHub authentication. Authentication is only required to push changes.
 
@@ -83,11 +68,12 @@ Every physical machine has its own host directory:
 hosts/<hostname>/
 ├── base.nix
 ├── kde.nix
-├── gnome.nix
 └── configuration.nix
 ```
 
 `base.nix` imports the machine's generated `/etc/nixos/hardware-configuration.nix`, `modules/common.nix`, the appropriate hardware profile, and any machine-specific profiles. Each physical machine must keep its own generated hardware configuration; never copy another machine's file.
+
+`kde.nix` imports the host base plus `profiles/kde.nix`. `configuration.nix` is the standard compatibility entry point and imports `kde.nix`.
 
 `system.stateVersion` stays at the value from that machine's original installation unless there is a specific reason to change it.
 
