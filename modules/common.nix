@@ -11,8 +11,6 @@ let
 
   nixosUpdate = pkgs.writeShellScriptBin "nixos-update"
     (builtins.readFile ../update-nixos-config.sh);
-  syncClock = pkgs.writeShellScriptBin "sync-clock"
-    (builtins.readFile ../sync-clock.sh);
 in
 {
   networking.networkmanager.enable = true;
@@ -90,6 +88,5 @@ in
     vlc
     fastfetch
     nixosUpdate
-    syncClock
   ];
 }
