@@ -87,6 +87,8 @@ in
     pokemmo-installer
     vlc
     fastfetch
+    android-tools
+    gnome-disk-utility
     nixosUpdate
   ];
 }
