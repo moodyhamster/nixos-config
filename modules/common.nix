@@ -89,6 +89,7 @@ in
     fastfetch
     android-tools
     gnome-disk-utility
+    sabnzbd
     nixosUpdate
   ];
 }
