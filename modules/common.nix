@@ -26,6 +26,8 @@ in
     openFirewall = true;
   };
 
+  services.tailscale.enable = true;
+
   time.timeZone = "Europe/London";
 
   i18n.defaultLocale = "en_US.UTF-8";
@@ -89,6 +91,7 @@ in
     fastfetch
     android-tools
     gnome-disk-utility
+    tailscale
     nixosUpdate
   ];
 }
