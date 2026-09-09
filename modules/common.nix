@@ -13,10 +13,6 @@ let
     (builtins.readFile ../update-nixos-config.sh);
 in
 {
-  # A simple graphical boot splash works with both GRUB and systemd-boot,
-  # unlike bootloader settings which remain machine-specific.
-  boot.plymouth.enable = true;
-
   networking.networkmanager.enable = true;
 
   services.avahi = {
@@ -66,26 +62,14 @@ in
   programs.firefox.enable = true;
   programs.steam.enable = true;
 
-  # Virtual-machine and container support from the reference configuration.
-  virtualisation.libvirtd.enable = true;
-  programs.virt-manager.enable = true;
-  virtualisation.podman.enable = true;
-
   nixpkgs.config.allowUnfree = true;
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
-
-  # Make installed fonts visible to applications that need a traditional
-  # font directory as well as fontconfig.
-  fonts.fontDir.enable = true;
-  fonts.packages = with pkgs; [
-    noto-fonts
-  ];
 
   users.mutableUsers = true;
   users.users.kim = {
     isNormalUser = true;
     description = "kim";
-    extraGroups = [ "networkmanager" "wheel" "libvirtd" ];
+    extraGroups = [ "networkmanager" "wheel" ];
   };
 
   environment.systemPackages = with pkgs; [
@@ -108,31 +92,6 @@ in
     android-tools
     gnome-disk-utility
     tailscale
-
-    # Compatible, non-duplicate applications and utilities adapted from the
-    # reference KDE configuration.
-    wget
-    micro
-    telegram-desktop
-    signal-desktop
-    freetube
-    rustup
-    ruby
-    bundler
-    blender
-    shotcut
-    obs-studio
-    spotify
-    gimp
-    synfigstudio
-    cava
-    parabolic
-    heimdall
-    adb-sync
-    appimage-run
-    htop
-    fish
-
     nixosUpdate
   ];
 }
