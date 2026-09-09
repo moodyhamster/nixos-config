@@ -42,15 +42,23 @@ Each host's `kde.nix` imports its machine base plus the shared KDE profile. GNOM
 
 ## Updates
 
-Normal updates use one machine-wide checkout at `/var/lib/nixos-config`:
+Normal updates use a checkout in the current user's home directory:
+
+```text
+~/nixos-config
+```
+
+Run updates with:
 
 ```bash
 nixos-update
 ```
 
-If the checkout does not exist, the updater clones the public repository there. Later runs pull the same checkout, detect the current hostname, and rebuild that host's KDE configuration.
+Run `nixos-update` as the normal user, not with `sudo`; the helper requests `sudo` only for the NixOS rebuild and for a one-time migration when needed.
 
-The repository is public, so cloning and pulling do not require GitHub authentication. Authentication is only required to push changes.
+If `~/nixos-config` does not exist, the updater clones the public repository there. Existing machines that still have the older `/var/lib/nixos-config` checkout are migrated automatically into the home directory and ownership is changed to the current user. Later runs pull the home-directory checkout, detect the current hostname, and rebuild that host's KDE configuration.
+
+The repository is public, so cloning and pulling do not require GitHub authentication. Authentication is only required to push changes. Because the normal checkout is user-owned, no second personal clone is needed for editing.
 
 ## Sync Clock
 
@@ -83,7 +91,7 @@ For another machine of an existing model, copy the matching host directory, give
 
 For a new model, start with `hosts/_template/`, then move reusable bootloader, graphics or service settings into `profiles/hardware/<model>.nix` once the machine is working.
 
-A personal clone is optional for normal updates. If one is wanted for editing or pushing:
+On a fresh installation, the normal checkout location is:
 
 ```bash
 git clone https://github.com/moodyhamster/nixos-config.git ~/nixos-config
