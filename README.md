@@ -19,6 +19,7 @@ nixos-config/
 │   ├── dell-inspiron-3501/
 │   ├── thinkpad-c13/
 │   ├── thinkpad-c13-2/
+│   ├── thinkpad-c13-3/
 │   ├── rog-strix-g16/
 │   └── _template/
 ├── MACHINES.md
@@ -99,7 +100,7 @@ hosts/<hostname>/
 
 ## Adding another machine
 
-For another machine of an existing model, copy the matching host directory, give it a unique hostname, and verify its original `system.stateVersion`. Identical machines can use numbered hostnames such as `thinkpad-c13-2` or `dell-optiplex-2`.
+For another machine of an existing model, copy the matching host directory, give it a unique hostname, and verify its original `system.stateVersion`. Identical machines can use numbered hostnames such as `thinkpad-c13-2`, `thinkpad-c13-3` or `dell-optiplex-2`.
 
 For a new model, start with `hosts/_template/`, then move reusable bootloader, graphics or service settings into `profiles/hardware/<model>.nix` once the machine is working.
 
