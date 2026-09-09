@@ -59,7 +59,6 @@ in
     pulse.enable = true;
   };
 
-  programs.firefox.enable = true;
   programs.steam.enable = true;
 
   nixpkgs.config.allowUnfree = true;
