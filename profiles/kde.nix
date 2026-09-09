@@ -6,6 +6,10 @@
   services.displayManager.sddm.enable = true;
   services.desktopManager.plasma6.enable = true;
 
+  # Allow KDE's RDP server (KRdp) through the NixOS firewall.
+  networking.firewall.allowedTCPPorts = [ 3389 ];
+  networking.firewall.allowedUDPPorts = [ 3389 ];
+
   # KDE uses Blueman for Bluetooth management.
   hardware.bluetooth.enable = true;
   services.blueman.enable = true;
