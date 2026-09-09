@@ -6,6 +6,9 @@
   services.displayManager.sddm.enable = true;
   services.desktopManager.plasma6.enable = true;
 
+  # KDE integration shared by every managed desktop.
+  programs.kdeconnect.enable = true;
+
   # KDE uses Blueman for Bluetooth management.
   hardware.bluetooth.enable = true;
   services.blueman.enable = true;
@@ -25,5 +28,6 @@
     kdePackages.kate
     kdePackages.kcalc
     kdePackages.krdc
+    kdePackages.sddm-kcm
   ];
 }
