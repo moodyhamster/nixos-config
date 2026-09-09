@@ -60,7 +60,17 @@ nixos-update --local
 
 A local rebuild can still need internet access if Nix must download a package or source that is not already present in the local Nix store/cache.
 
-The repository is public, so cloning and pulling do not require GitHub authentication. Authentication is only required to push changes.
+To push commits that already exist in the local checkout to GitHub without rebuilding, use:
+
+```bash
+nixos-update --push
+```
+
+The short form `-p` is also supported. The push option does not stage files or create commits, so uncommitted changes are never included automatically. This avoids accidentally committing local-only or sensitive files. Because `/var/lib/nixos-config` remains root-owned, the helper prepares a temporary user-owned copy for the push so GitHub authentication uses the normal user's credentials.
+
+If GitHub authentication has not been configured for Git, run `gh auth login` followed by `gh auth setup-git` before using the push option.
+
+The repository is public, so cloning and pulling do not require GitHub authentication. Authentication is required to push changes.
 
 ## Sync Clock
 
