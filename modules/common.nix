@@ -62,6 +62,9 @@ in
   programs.steam.enable = true;
 
   nixpkgs.config.allowUnfree = true;
+  nixpkgs.config.permittedInsecurePackages = [
+    "ventoy-1.1.12"
+  ];
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
   users.mutableUsers = true;
@@ -91,6 +94,7 @@ in
     android-tools
     gnome-disk-utility
     tailscale
+    ventoy-full
     nixosUpdate
   ];
 }
