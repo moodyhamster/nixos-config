@@ -128,7 +128,6 @@ in
     cava
     parabolic
     heimdall
-    ventoy-full
     adb-sync
     appimage-run
     htop
