@@ -8,7 +8,7 @@ The single managed user is `kim`, with `networkmanager` and `wheel` membership. 
 
 OpenSSH is enabled for local-network remote access on every managed host through `modules/common.nix`.
 
-Identical physical machines use unique numbered hostnames such as `thinkpad-c13-2` and `dell-optiplex-2`. They may reuse the same model profile, but each machine keeps its own generated `/etc/nixos/hardware-configuration.nix`.
+Identical physical machines use unique numbered hostnames such as `thinkpad-c13-2`, `thinkpad-c13-3` and `dell-optiplex-2`. They may reuse the same model profile, but each machine keeps its own generated `/etc/nixos/hardware-configuration.nix`.
 
 ## Host layout
 
@@ -72,6 +72,19 @@ hosts/<hostname>/
 - `system.stateVersion`: `26.05`
 - Model profile: `profiles/hardware/thinkpad-c13.nix`
 - Host directory: `hosts/thinkpad-c13-2/`
+- Uses this machine's own generated `/etc/nixos/hardware-configuration.nix`
+
+## Lenovo ThinkPad C13 Yoga Chromebook Gen 1 - machine 3
+
+- Managed hostname: `thinkpad-c13-3`
+- User: `kim`
+- Desktop: KDE Plasma 6
+- CPU/GPU: AMD Ryzen 5 3500C with integrated Radeon Vega graphics
+- Boot mode: UEFI
+- Bootloader: systemd-boot
+- `system.stateVersion`: `26.05`
+- Model profile: `profiles/hardware/thinkpad-c13.nix`
+- Host directory: `hosts/thinkpad-c13-3/`
 - Uses this machine's own generated `/etc/nixos/hardware-configuration.nix`
 
 ## ASUS ROG Strix G16 (2023)
