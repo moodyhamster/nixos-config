@@ -48,7 +48,17 @@ Normal updates use one machine-wide checkout at `/var/lib/nixos-config`:
 nixos-update
 ```
 
-If the checkout does not exist, the updater clones the public repository there. Later runs pull the same checkout, detect the current hostname, and rebuild that host's KDE configuration.
+If the checkout does not exist, the updater clones the public repository there. Later normal runs pull the same checkout, detect the current hostname, and rebuild that host's KDE configuration.
+
+To rebuild from the configuration that is already stored locally without pulling from GitHub, use:
+
+```bash
+nixos-update --local
+```
+
+`--local` can be used even when an internet connection is available. It skips the Git pull completely and rebuilds from the existing `/var/lib/nixos-config` checkout. The short form `-l` is also supported.
+
+A local rebuild can still need internet access if Nix must download a package or source that is not already present in the local Nix store/cache.
 
 The repository is public, so cloning and pulling do not require GitHub authentication. Authentication is only required to push changes.
 
