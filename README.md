@@ -30,21 +30,15 @@ nixos-config/
 
 `modules/common.nix` contains settings and applications used across all managed hosts, including networking, OpenSSH remote access, Tailscale, audio, printing, browsers, Git/GitHub CLI, Codex, `lm_sensors`, LibreOffice, qBittorrent, Lutris, Steam, Sticky, Proton VPN, VLC, fastfetch and the `nixos-update` helper.
 
-It also provides Plymouth, Noto fonts, libvirt/virt-manager, Podman, and a curated set of compatible applications and utilities adapted from the referenced KDE configuration. Redundant browsers, disk tools, media players, alternate bootloader/hostname/locale settings, shell replacement logic, and obsolete or unclear package entries were intentionally not copied.
-
 OpenSSH is enabled on every managed host and the SSH firewall port is opened by the shared configuration.
 
-The single managed login account is `kim`, with membership in `networkmanager`, `wheel`, and `libvirtd`. Passwords are set locally and are never stored in Git. `users.mutableUsers = true` keeps locally set passwords mutable across rebuilds.
+The single managed login account is `kim`, with membership in `networkmanager` and `wheel`. Passwords are set locally and are never stored in Git. `users.mutableUsers = true` keeps locally set passwords mutable across rebuilds.
 
 ## KDE Plasma
 
-`profiles/kde.nix` enables KDE Plasma 6 and SDDM, provides the KDE application set, defaults to Breeze Dark, enables Bluetooth with Blueman, and enables KDE Connect. The SDDM settings module is also installed without replacing the existing Breeze-based desktop theme choices.
+`profiles/kde.nix` enables KDE Plasma 6 and SDDM, provides the KDE application set, defaults to Breeze Dark, and enables Bluetooth with Blueman.
 
-Each host's `kde.nix` imports its machine base plus the shared KDE profile. GNOME and the desktop-switching helper are not part of this repository.
-
-## Gaming
-
-`profiles/gaming.nix` adds Wine and Winetricks only to hosts that already use the gaming profile, instead of installing those tools on every machine.
+Each host's `kde.nix` imports its machine base plus `profiles/kde.nix`. GNOME and the desktop-switching helper are not part of this repository.
 
 ## Updates
 
