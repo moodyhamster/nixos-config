@@ -90,6 +90,7 @@ in
     proton-vpn
     pokemmo-installer
     vlc
+    unrar
     fastfetch
     android-tools
     gnome-disk-utility
