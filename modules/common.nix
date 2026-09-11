@@ -28,6 +28,8 @@ in
 
   services.tailscale.enable = true;
 
+  virtualisation.docker.enable = true;
+
   time.timeZone = "Europe/London";
 
   i18n.defaultLocale = "en_US.UTF-8";
@@ -71,7 +73,7 @@ in
   users.users.kim = {
     isNormalUser = true;
     description = "kim";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "networkmanager" "wheel" "docker" ];
   };
 
   environment.systemPackages = with pkgs; [
@@ -91,7 +93,7 @@ in
     vlc
     unrar
     mame-tools
-    wineWow64Packages.stable
+    winboat
     fastfetch
     android-tools
     gnome-disk-utility
