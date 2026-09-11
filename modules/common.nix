@@ -28,9 +28,6 @@ in
 
   services.tailscale.enable = true;
 
-  # WinBoat runs Windows inside a Docker container/VM.
-  virtualisation.docker.enable = true;
-
   time.timeZone = "Europe/London";
 
   i18n.defaultLocale = "en_US.UTF-8";
@@ -74,7 +71,7 @@ in
   users.users.kim = {
     isNormalUser = true;
     description = "kim";
-    extraGroups = [ "networkmanager" "wheel" "docker" ];
+    extraGroups = [ "networkmanager" "wheel" ];
   };
 
   environment.systemPackages = with pkgs; [
@@ -95,7 +92,6 @@ in
     vlc
     unrar
     wineWowPackages.stable
-    winboat
     fastfetch
     android-tools
     gnome-disk-utility
