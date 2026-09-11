@@ -91,7 +91,7 @@ in
     pokemmo-installer
     vlc
     unrar
-    wine64Packages.stable
+    wineWow64Packages.stable
     fastfetch
     android-tools
     gnome-disk-utility
