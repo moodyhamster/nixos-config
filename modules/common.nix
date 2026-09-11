@@ -88,7 +88,6 @@ in
     lutris
     sticky
     proton-vpn
-    pokemmo-installer
     vlc
     unrar
     mame-tools
