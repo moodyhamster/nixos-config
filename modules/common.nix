@@ -91,6 +91,7 @@ in
     vlc
     unrar
     mame-tools
+    lufus
     fastfetch
     android-tools
     gnome-disk-utility
