@@ -20,8 +20,8 @@
   # Every physical computer must have a unique hostname.
   networking.hostName = "CHANGE-ME";
 
-  # Both jason and val are created by modules/common.nix and both have wheel.
-  # Passwords are set locally and never stored in Git.
+  # The shared configuration creates the managed user kim. Passwords are set
+  # locally and are never stored in Git.
 
   # IMPORTANT: copy this value from THIS machine's original configuration.nix.
   # system.stateVersion = "26.05";
