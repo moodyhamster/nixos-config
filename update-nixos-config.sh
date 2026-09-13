@@ -16,11 +16,12 @@ pause() {
 }
 
 usage() {
-  echo "Usage: nixos-update [--local|--push]"
+  echo "Usage: nixos-update [--local|--upgrade|--push]"
   echo
-  echo "  nixos-update          Pull the latest configuration, then rebuild."
-  echo "  nixos-update --local  Skip GitHub and rebuild from the existing local checkout."
-  echo "  nixos-update --push   Push existing local commits to GitHub without rebuilding."
+  echo "  nixos-update            Pull the latest configuration, then rebuild."
+  echo "  nixos-update --local    Skip GitHub and rebuild from the existing local checkout."
+  echo "  nixos-update --upgrade  Pull the latest configuration, update the configured NixOS channel, then rebuild."
+  echo "  nixos-update --push     Push existing local commits to GitHub without rebuilding."
 }
 
 if [[ "$#" -gt 1 ]]; then
@@ -33,6 +34,9 @@ case "${1:-}" in
     ;;
   --local|-l)
     MODE="local"
+    ;;
+  --upgrade|-u)
+    MODE="upgrade"
     ;;
   --push|-p)
     MODE="push"
@@ -192,8 +196,15 @@ fi
 echo "Using: $CONFIG"
 
 echo
-echo "3/3 Rebuilding NixOS..."
-if sudo nixos-rebuild switch -I "nixos-config=$CONFIG"; then
+if [[ "$MODE" == "upgrade" ]]; then
+  echo "3/3 Updating the configured NixOS channel and rebuilding..."
+  REBUILD_ARGS=(switch --upgrade -I "nixos-config=$CONFIG")
+else
+  echo "3/3 Rebuilding NixOS..."
+  REBUILD_ARGS=(switch -I "nixos-config=$CONFIG")
+fi
+
+if sudo nixos-rebuild "${REBUILD_ARGS[@]}"; then
   echo
   echo "========================================"
   echo " NixOS updated successfully."
@@ -201,6 +212,8 @@ if sudo nixos-rebuild switch -I "nixos-config=$CONFIG"; then
   echo " Desktop: KDE Plasma"
   if [[ "$MODE" == "local" ]]; then
     echo " Source: local configuration"
+  elif [[ "$MODE" == "upgrade" ]]; then
+    echo " Source: latest GitHub configuration + upgraded NixOS channel"
   else
     echo " Source: latest GitHub configuration"
   fi
