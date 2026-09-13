@@ -92,7 +92,7 @@ in
     proton-vpn
     vlc
 
-    # Gaming and image tools
+    # Gaming, archive and emulation tools
     lutris
     unrar
     mame-tools # Includes chdman.
