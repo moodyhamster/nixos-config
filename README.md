@@ -1,8 +1,6 @@
 # NixOS configuration
 
-Public multi-host NixOS configuration for the machines in `MACHINES.md`.
-
-KDE Plasma 6 is the desktop environment on every managed host.
+Public multi-host NixOS configuration for the machines documented in `MACHINES.md`. Every managed host uses KDE Plasma 6 and the shared user `kim`.
 
 ```text
 nixos-config/
@@ -27,59 +25,43 @@ nixos-config/
 └── sync-clock.sh
 ```
 
-## Common configuration
+## Shared configuration
 
-`modules/common.nix` contains settings and applications used across all managed hosts, including networking, OpenSSH remote access, Tailscale, audio, printing, browsers, Git/GitHub CLI, Codex, `lm_sensors`, LibreOffice, qBittorrent, Lutris, Steam, Sticky, Proton VPN, VLC, fastfetch and the `nixos-update` helper.
+`modules/common.nix` contains settings and applications used by every managed machine. It enables NetworkManager, Avahi, OpenSSH, Tailscale, printing, PipeWire, Steam, and the shared application set.
 
-OpenSSH is enabled on every managed host and the SSH firewall port is opened by the shared configuration.
+Shared applications currently include Git, GitHub CLI, Codex, `lm_sensors`, Brave, Discord, LibreWolf, LibreOffice, Zen Browser, qBittorrent, Lutris, Sticky, Proton VPN, VLC, `unrar`, MAME tools (`chdman`), Lufus, fastfetch, Android tools, GNOME Disk Utility, Tailscale, Ventoy, and the `nixos-update` helper.
 
-The single managed login account is `kim`, with membership in `networkmanager` and `wheel`. Passwords are set locally and are never stored in Git. `users.mutableUsers = true` keeps locally set passwords mutable across rebuilds.
+GNOME Disk Utility is installed as an application only; the GNOME desktop is not enabled. Wine, WinBoat, Docker, Firefox, PokeMMO, GNOME desktop components, and the old desktop-switching helper are not part of the current configuration.
+
+The managed user is `kim`, with `networkmanager` and `wheel` membership. Passwords and other secrets are set locally and must never be committed to this public repository.
 
 ## KDE Plasma
 
-`profiles/kde.nix` enables KDE Plasma 6 and SDDM, provides the KDE application set, defaults to Breeze Dark, and enables Bluetooth with Blueman.
+`profiles/kde.nix` enables KDE Plasma 6 and SDDM, defaults to Breeze Dark, enables Bluetooth with Blueman, installs Kate, KCalc and KRDC, and opens TCP/UDP port 3389 for KDE Remote Desktop.
 
-Each host's `kde.nix` imports its machine base plus `profiles/kde.nix`. GNOME and the desktop-switching helper are not part of this repository.
+Each host's `kde.nix` imports its machine base plus `profiles/kde.nix`.
 
-## Updates
+## Updating a machine
 
-Normal updates use one machine-wide checkout at `/var/lib/nixos-config`:
+The normal update command uses the shared checkout at `/var/lib/nixos-config`, pulls GitHub, selects the host by its hostname, and rebuilds the matching KDE configuration:
 
 ```bash
 nixos-update
 ```
 
-If the checkout does not exist, the updater clones the public repository there. Later normal runs pull the same checkout, detect the current hostname, and rebuild that host's KDE configuration.
-
-To rebuild from the configuration that is already stored locally without pulling from GitHub, use:
+Available modes:
 
 ```bash
-nixos-update --local
+nixos-update --local    # Rebuild the existing checkout without pulling GitHub.
+nixos-update --upgrade  # Pull GitHub, upgrade the configured NixOS channel, then rebuild.
+nixos-update --push     # Push existing local commits without rebuilding.
 ```
 
-`--local` can be used even when an internet connection is available. It skips the Git pull completely and rebuilds from the existing `/var/lib/nixos-config` checkout. The short form `-l` is also supported.
+Short forms are `-l`, `-u`, and `-p` respectively.
 
-A local rebuild can still need internet access if Nix must download a package or source that is not already present in the local Nix store/cache.
+`--local` can still need internet access when Nix must download a package or source that is missing from the local store. `--push` does not stage files or create commits, so uncommitted changes are not included automatically.
 
-To push commits that already exist in the local checkout to GitHub without rebuilding, use:
-
-```bash
-nixos-update --push
-```
-
-The short form `-p` is also supported. The push option does not stage files or create commits, so uncommitted changes are never included automatically. This avoids accidentally committing local-only or sensitive files. Because `/var/lib/nixos-config` remains root-owned, the helper prepares a temporary user-owned copy for the push so GitHub authentication uses the normal user's credentials.
-
-If GitHub authentication has not been configured for Git, run `gh auth login` followed by `gh auth setup-git` before using the push option.
-
-The repository is public, so cloning and pulling do not require GitHub authentication. Authentication is required to push changes.
-
-## Sync Clock
-
-The `sync-clock` helper is installed only on hosts that use `profiles/hardware/dell-optiplex.nix`, so it is available on all managed Dell OptiPlex machines without being installed on laptops or unrelated hosts.
-
-```bash
-sync-clock
-```
+The repository is public, so cloning and pulling do not require GitHub authentication. Pushing does. If needed, configure GitHub CLI with `gh auth login` followed by `gh auth setup-git`.
 
 ## Host layout
 
@@ -92,19 +74,29 @@ hosts/<hostname>/
 └── configuration.nix
 ```
 
-`base.nix` imports the machine's generated `/etc/nixos/hardware-configuration.nix`, `modules/common.nix`, the appropriate hardware profile, and any machine-specific profiles. Each physical machine must keep its own generated hardware configuration; never copy another machine's file.
+`base.nix` imports that machine's generated `/etc/nixos/hardware-configuration.nix`, `modules/common.nix`, the appropriate hardware profile, and any machine-specific profiles. Never copy another physical machine's generated hardware configuration.
 
 `kde.nix` imports the host base plus `profiles/kde.nix`. `configuration.nix` is the standard compatibility entry point and imports `kde.nix`.
 
-`system.stateVersion` stays at the value from that machine's original installation unless there is a specific reason to change it.
+Keep `system.stateVersion` at the value from the machine's original installation unless there is a specific reason to change it.
+
+## Model profiles
+
+Reusable model-specific settings live in `profiles/hardware/`. The Dell OptiPlex profile also installs the `sync-clock` helper:
+
+```bash
+sync-clock
+```
+
+`profiles/gaming.nix` is intentionally kept as a small placeholder for future gaming-only tuning; shared gaming applications currently live in `modules/common.nix`.
 
 ## Adding another machine
 
-For another machine of an existing model, copy the matching host directory, give it a unique hostname, and verify its original `system.stateVersion`. Identical machines can use numbered hostnames such as `thinkpad-c13-2`, `thinkpad-c13-3` or `dell-optiplex-2`.
+For another machine of an existing model, copy the matching host directory, assign a unique hostname, and verify that machine's original `system.stateVersion`. Identical machines may share a model profile, but each keeps its own `/etc/nixos/hardware-configuration.nix`.
 
-For a new model, start with `hosts/_template/`, then move reusable bootloader, graphics or service settings into `profiles/hardware/<model>.nix` once the machine is working.
+For a new model, start with `hosts/_template/`, then move reusable bootloader, graphics, or service settings into `profiles/hardware/<model>.nix` after the machine is working.
 
-A personal clone is optional for normal updates. If one is wanted for editing or pushing:
+A personal clone is optional for normal operation:
 
 ```bash
 git clone https://github.com/moodyhamster/nixos-config.git ~/nixos-config
