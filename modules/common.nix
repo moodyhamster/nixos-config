@@ -75,26 +75,33 @@ in
   };
 
   environment.systemPackages = with pkgs; [
+    # Development and administration
     git
     gh
     codex
     lm_sensors
+
+    # Browsers and desktop applications
     brave
     discord
     librewolf
     libreoffice-fresh
     zenBrowser
     qbittorrent
-    lutris
     sticky
     proton-vpn
     vlc
+
+    # Gaming and image tools
+    lutris
     unrar
-    mame-tools
+    mame-tools # Includes chdman.
+
+    # System and device utilities
     lufus
     fastfetch
     android-tools
-    gnome-disk-utility
+    gnome-disk-utility # Application only; GNOME desktop is not enabled.
     tailscale
     ventoy-full
     nixosUpdate
