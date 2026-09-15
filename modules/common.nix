@@ -96,6 +96,7 @@ in
     lutris
     unrar
     mame-tools # Includes chdman.
+    extract-xiso
 
     # System and device utilities
     lufus
