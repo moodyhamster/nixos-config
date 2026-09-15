@@ -94,6 +94,7 @@ in
 
     # Gaming, archive and emulation tools
     lutris
+    pcsx2
     unrar
     mame-tools # Includes chdman.
     extract-xiso
