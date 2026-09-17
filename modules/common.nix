@@ -91,6 +91,7 @@ in
     sticky
     proton-vpn
     vlc
+    filezilla
 
     # Gaming, archive and emulation tools
     lutris
