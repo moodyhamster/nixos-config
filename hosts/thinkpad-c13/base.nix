@@ -27,7 +27,6 @@
         proxyPass = "https://xxevilnatxx.github.io/flash-writer/";
         extraConfig = ''
           proxy_ssl_server_name on;
-          proxy_ssl_name xxe...;
         '';
       };
     };
