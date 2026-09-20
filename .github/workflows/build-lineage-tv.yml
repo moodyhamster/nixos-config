@@ -156,6 +156,12 @@ jobs:
         run: |
           set -euxo pipefail
           sudo chown "$USER:$USER" work/system/system.img
+
+          # Ubuntu 24.04 ships erofs-utils 1.7.x. In this version, setting
+          # -C65536 already enables big pclusters; -Ebig_pcluster is not a
+          # recognized extended option.
+          sed -i 's/ -Ebig_pcluster//' patchrepo/scripts/package_gapps_iso.sh
+
           bash patchrepo/scripts/package_gapps_iso.sh
           test -f "out/$OUT_NAME"
 
