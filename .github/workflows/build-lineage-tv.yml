@@ -18,8 +18,8 @@ jobs:
 
     env:
       ISO_NAME: lineage-21.0-20260331-UNOFFICIAL-x86_64_tv-signed.iso
-      ISO_SHA256: f3809277682923531d03afdfb1095c166e4d000a9428e907c19de8fc2991dd4f
       ISO_URL: https://downloads.sourceforge.net/project/lineageos-tv-x86/lineage-21.0/x86_64_tv/lineage-21.0-20260331-UNOFFICIAL-x86_64_tv-signed.iso
+      ISO_SUM_URL: https://downloads.sourceforge.net/project/lineageos-tv-x86/lineage-21.0/x86_64_tv/lineage-21.0-20260331-UNOFFICIAL-x86_64_tv-signed.iso.sha256sum
       GAPPS_NAME: MindTheGapps-14.0.0-x86_64-ATV-full-20250624_164100.zip
       GAPPS_SHA256: f6422807bf9963cb23c52ed933d51af80660de96ae80b68c917005ea7782524b
       GAPPS_URL: https://github.com/supremegamers/MTG-14.0.0-x86_64-ATV/releases/download/MindTheGapps-14.0.0-x86_64-ATV-20250624_164100/MindTheGapps-14.0.0-x86_64-ATV-full-20250624_164100.zip
@@ -54,7 +54,10 @@ jobs:
           set -euxo pipefail
           curl -fL --retry 8 --retry-delay 5 --connect-timeout 30 \
             "$ISO_URL" -o "$ISO_NAME"
-          echo "$ISO_SHA256  $ISO_NAME" | sha256sum -c -
+          curl -fL --retry 8 --retry-delay 5 --connect-timeout 30 \
+            "$ISO_SUM_URL" -o "$ISO_NAME.sha256sum"
+          cat "$ISO_NAME.sha256sum"
+          sha256sum -c "$ISO_NAME.sha256sum"
 
       - name: Download and verify Android TV GApps
         run: |
@@ -94,7 +97,6 @@ jobs:
             exit "$rc"
           fi
 
-          # Leave comfortable room for the TV GApps package and patch files.
           truncate -s +1536M work/system/system.img
           sudo resize2fs work/system/system.img
 
@@ -145,9 +147,9 @@ jobs:
           set -euxo pipefail
           sudo -E bash patchrepo/scripts/integrate_mindthegapps.sh "$GITHUB_WORKSPACE/$GAPPS_NAME"
 
-          # The repository's current GApps script removes the Settings overlay
-          # while normalizing the image. Reinstall the audio switcher afterward
-          # so the final image contains both the app and its Settings overlay.
+          # The current integration script removes the Settings overlay while
+          # normalizing the image. Reinstall the switcher after GApps so both
+          # the privileged app and the Settings overlay are present.
           sudo -E bash patchrepo/scripts/install_audio_switcher_to_system_img.sh
 
       - name: Package bootable ISO
@@ -169,10 +171,11 @@ jobs:
           mkdir -p artifact
           sha256sum "out/$OUT_NAME" | tee artifact/SHA256SUMS
           stat -c '%n %s bytes' "out/$OUT_NAME" | tee artifact/SIZE.txt
+          ISO_SHA256_ACTUAL="$(sha256sum "$ISO_NAME" | awk '{print $1}')"
 
           cat > artifact/BUILD_INFO.txt <<EOF
           Base ISO: $ISO_NAME
-          Base ISO SHA-256: $ISO_SHA256
+          Base ISO SHA-256: $ISO_SHA256_ACTUAL
           GApps: $GAPPS_NAME
           GApps SHA-256: $GAPPS_SHA256
           HDMI patch repository: $PATCH_REPO
