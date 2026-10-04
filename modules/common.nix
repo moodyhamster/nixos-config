@@ -99,6 +99,7 @@ in
     unrar
     mame-tools # Includes chdman.
     extract-xiso
+    dotnet-runtime_6
 
     # System and device utilities
     lufus
