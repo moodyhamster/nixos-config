@@ -62,9 +62,8 @@ in
   programs.steam.enable = true;
 
   nixpkgs.config.allowUnfree = true;
-  nixpkgs.config.permittedInsecurePackages = [
-    "ventoy-1.1.12"
-  ];
+  # Allow packages that nixpkgs marks as insecure/EOL.
+  nixpkgs.config.allowInsecurePredicate = _: true;
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
   users.mutableUsers = true;
