@@ -62,8 +62,9 @@ in
   programs.steam.enable = true;
 
   nixpkgs.config.allowUnfree = true;
-  # Allow packages that nixpkgs marks as insecure/EOL.
-  nixpkgs.config.allowInsecurePredicate = _: true;
+  nixpkgs.config.permittedInsecurePackages = [
+    "ventoy-1.1.12"
+  ];
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
   users.mutableUsers = true;
@@ -98,7 +99,6 @@ in
     unrar
     mame-tools # Includes chdman.
     extract-xiso
-    dotnet-runtime_6
 
     # System and device utilities
     lufus
